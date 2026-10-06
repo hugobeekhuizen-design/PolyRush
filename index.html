@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <script type="application/json" id="capabilities">{"required":["collab","storage"]}</script>
     <title>PolyRush</title>
     <!-- artifact-input-sha256:33ce06e1c15f61936ef7f3142c53ed0748cfddecaffda1afc032272051e55436 -->
@@ -28584,7 +28584,10 @@ void main() {
   a(NR, "viewer");
   var Im = a(() => String(NR()?.id || ""), "viewerId"), DR = a(() => iB.includes(Im()), "isAdmin");
   function Qv(t, e) {
-    return !e && t?.exhaust === "jet" ? { ...t, exhaust: "standard" } : t;
+    if (!t) return t;
+    let r = t;
+    !e && r.exhaust === "jet" && (r = { ...r, exhaust: "standard" }), !e && r.type === "admin" && (r = { ...r, type: "racer" }), r.exhaust === "side" && (r = { ...r, exhaust: "standard" });
+    return r;
   }
   a(Qv, "sanitizeCar");
   function Jv(t) {
@@ -28601,7 +28604,7 @@ void main() {
     return (0, ye.jsxs)("button", { type: "button", role: "switch", "aria-checked": n, onClick: () => i(!n), className: "flex w-full cursor-pointer items-center justify-between gap-4 -skew-x-[8deg] bg-[#16215c] px-4 py-3 text-left transition-colors hover:bg-[#1d2a72]", children: [(0, ye.jsxs)("span", { className: "skew-x-[8deg]", children: [(0, ye.jsx)("span", { className: "block text-[17px] font-bold italic", children: t }), e && (0, ye.jsx)("span", { className: "block text-[14px] text-[#c7d1ff]", children: e })] }), (0, ye.jsx)("span", { className: `relative h-7 w-14 shrink-0 skew-x-[8deg] transition-colors ${n ? "bg-[#ffc928]" : "bg-[#0b1238]"}`, children: (0, ye.jsx)("span", { className: `absolute top-1 h-5 w-5 bg-white transition-all ${n ? "left-8" : "left-1"}` }) })] });
   }
   a(jv, "Toggle");
-  function LR({ settings: t, setSettings: e, profile: n, setProfile: i, sound: r, setSound: s, admin: o, pending: l, onReview: c, onBack: u }) {
+  function LR({ settings: t, setSettings: e, profile: n, setProfile: i, sound: r, setSound: s, admin: o, pending: l, onReview: c, onPractice: practice, onBack: u }) {
     let [d, p] = ga.useState(!n), [f, h] = ga.useState(n?.name || "");
     ga.useEffect(() => h(n?.name || ""), [n?.name]);
     let x = NR();
@@ -29221,28 +29224,64 @@ void main() {
   }
   a(Lm, "buildSky");
   function gB() {
-    let t = new At(), e = new At(), n = a((f) => new ln({ color: f, flatShading: true }), "L"), i = a((f, h, x, b, v, m, g, _ = e) => {
+    let t = new At(), e = new At(), mats = new Map(), n = a((f, em, ei) => {
+      let k = f + (em || "");
+      return mats.get(k) || (mats.set(k, new ln(em ? { color: f, emissive: em, emissiveIntensity: ei || 1, flatShading: true } : { color: f, flatShading: true })), mats.get(k));
+    }, "L"), i = a((f, h, x, b, v, m, g, _ = e, sh = false) => {
       let y = new Je(new wt(f, h, x), b);
-      return y.position.set(v, m, g), y.castShadow = y.receiveShadow = true, _.add(y), y;
-    }, "box"), r = new Je(new Lr(900, 900), n("#5f6c82"));
-    r.rotation.x = -Math.PI / 2, r.receiveShadow = true, e.add(r);
-    let s = n("#7d8797"), o = n("#4a515d"), l = n("#c9d0db"), c = n("#2b3f9e"), u = n("#7c2e33");
-    i(62, 10, 14, s, -6, 5, -52), i(62.4, 0.8, 14.4, c, -6, 10.2, -52), i(12, 10.4, 14.2, u, -42, 5.2, -52);
-    for (let f = 0; f < 3; f++) {
-      let h = -24 + f * 18;
-      i(14, 7.4, 0.6, o, h, 3.7, -44.8), i(15.2, 0.6, 0.9, l, h, 7.7, -44.6), i(0.6, 8, 0.9, l, h - 7.5, 4, -44.6), i(0.6, 8, 0.9, l, h + 7.5, 4, -44.6);
-      for (let x = 1; x < 7; x++) i(13.6, 0.08, 0.1, n("#3b414b"), h, x * 1.05, -44.45);
+      return y.position.set(v, m, g), y.castShadow = sh, y.receiveShadow = true, _.add(y), y;
+    }, "box"), W = 14, H = 7.5, DW = 10, DH = 5.6;
+    let out = new Je(new Lr(1400, 1400), n("#4f9a68"));
+    out.rotation.x = -Math.PI / 2, out.position.y = -0.14, out.receiveShadow = true, e.add(out);
+    i(28.4, 0.2, 28.4, n("#59606d"), 0, -0.1, 0);
+    for (let k = -3; k <= 3; k++) i(28, 0.012, 0.06, n("#4b515c"), 0, 0.005, k * 4), i(0.06, 0.012, 28, n("#4b515c"), k * 4, 0.005, 0);
+    let disc = new Je(new zn(4.6, 4.6, 0.08, 40), n("#232835"));
+    disc.position.y = 0.04, disc.receiveShadow = true, e.add(disc);
+    let ring = new Je(new hs(4.6, 0.07, 6, 48), n("#ffc928", "#ffb000", 0.6));
+    ring.rotation.x = Math.PI / 2, ring.position.y = 0.09, e.add(ring);
+    for (let k of [-1, 1]) i(0.25, 0.012, 9, n("#ffc928"), k * 5.2, 0.01, 8.4);
+    let wall = n("#c3c8d2"), trim = n("#363c4b"), steel = n("#7d8697");
+    i(28.4, H, 0.4, wall, 0, H / 2, -W), i(0.4, H, 28.4, wall, -W, H / 2, 0), i(0.4, H, 28.4, wall, W, H / 2, 0);
+    i(W - DW / 2, H, 0.4, wall, -(W + DW / 2) / 2, H / 2, W), i(W - DW / 2, H, 0.4, wall, (W + DW / 2) / 2, H / 2, W), i(DW, H - DH, 0.4, wall, 0, DH + (H - DH) / 2, W);
+    i(28, 1.1, 0.1, trim, 0, 0.55, -W + 0.25), i(0.1, 1.1, 28, trim, -W + 0.25, 0.55, 0), i(0.1, 1.1, 28, trim, W - 0.25, 0.55, 0);
+    i(28.4, 0.3, 28.4, n("#9aa1ad"), 0, H + 0.15, 0);
+    for (let k of [-7, 0, 7]) i(0.5, 0.1, 18, n("#fff6e0", "#fff1c8", 1.1), k, H - 0.06, 0), i(0.7, 0.14, 18.2, trim, k, H - 0.0, 0);
+    for (let k = -2; k <= 2; k++) i(0.3, 0.5, 28, steel, k * 5.5, H - 0.25, 0);
+    i(DW + 0.8, 0.5, 0.5, steel, 0, DH + 0.25, W - 0.3), i(0.35, DH, 0.35, steel, -DW / 2 - 0.2, DH / 2, W - 0.3), i(0.35, DH, 0.35, steel, DW / 2 + 0.2, DH / 2, W - 0.3);
+    let drum = new Je(new zn(0.42, 0.42, DW + 0.4, 14), steel);
+    drum.rotation.z = Math.PI / 2, drum.position.set(0, DH + 0.3, W - 0.75), e.add(drum);
+    let door = new At();
+    door.position.set(0, DH, W - 0.45);
+    for (let k = 0; k < 9; k++) i(DW, DH / 9 - 0.05, 0.12, n(k % 2 ? "#8d96a6" : "#a3abb9"), 0, -(k + 0.5) * DH / 9, 0, door);
+    i(DW, 0.16, 0.2, n("#2b3f9e"), 0, -DH + 0.08, 0, door), i(1.2, 0.12, 0.18, trim, 0, -DH + 0.75, 0.04, door), e.add(door);
+    let red = n("#c8333b"), dark = n("#2a2e38"), tire = n("#1a1c22");
+    for (let k = 0; k < 3; k++) {
+      let z = -9 + k * 6;
+      i(0.9, 2.8, 2.2, red, -W + 0.75, 1.4, z, e, true);
+      for (let q = 0; q < 4; q++) i(0.04, 0.03, 2.0, dark, -W + 1.21, 0.5 + q * 0.62, z);
     }
-    for (let f = 0; f < 4; f++) i(1.6, 0.1, 7, l, -24 + f * 6, 0.03, -34);
-    let d = new At();
-    for (let f = -30; f < 30; f++) i(2.2, 0.12, 4, n(f % 2 ? "#e8262b" : "#f4f4f2"), 0, 0.06, f * 4, d);
-    i(1.2, 1.2, 240, n("#1f242c"), 1.8, 0.6, 0, d), d.position.set(26, 0, -40), d.rotation.y = 0.08, e.add(d);
-    let p = [n("#4f9a68"), n("#5fae78"), n("#3f8a58")];
-    for (let f = 0; f < 16; f++) {
-      let h = -1.2 + f / 15 * 3.6, x = 170 + lt(f, 2.7) * 90, b = new Je(new jo(1, 0), p[f % 3]);
-      b.scale.set(50 + lt(f, 1.1) * 40, 14 + lt(f, 4.4) * 22, 40 + lt(f, 9) * 30), b.position.set(Math.sin(h) * x, -2, -Math.cos(h) * x), b.rotation.y = lt(f, 5) * 3, e.add(b);
+    for (let k = 0; k < 2; k++) for (let q = 0; q < 4; q++) {
+      let ty = new Je(new zn(0.55, 0.55, 0.38, 16), tire);
+      ty.position.set(-W + 1.1, 0.19 + q * 0.4, 8.4 + k * 1.3), ty.castShadow = true, e.add(ty);
     }
-    return e.rotation.y = 0.75, t.add(e), t;
+    i(1.2, 0.12, 8, n("#8a5a3a"), W - 0.9, 1.05, -6), i(1.2, 1.0, 0.1, dark, W - 0.9, 0.5, -9.9), i(1.2, 1.0, 0.1, dark, W - 0.9, 0.5, -2.1);
+    i(0.08, 2.4, 8, n("#3a4152"), W - 0.25, 2.6, -6);
+    for (let q = 0; q < 7; q++) i(0.1, 0.5 + (q % 3) * 0.25, 0.12, n(["#ffc928", "#c9ccd6", "#ff3b3b"][q % 3]), W - 0.38, 2.4, -9.2 + q * 1.05);
+    let sign = document.createElement("canvas");
+    sign.width = 1024, sign.height = 256;
+    let g2 = sign.getContext("2d");
+    g2.fillStyle = "#0f1847", g2.fillRect(0, 0, 1024, 256), g2.fillStyle = "#ffc928", g2.fillRect(0, 216, 1024, 16), g2.fillStyle = "#e8ecff", g2.font = "italic 700 150px 'Chakra Petch', system-ui, sans-serif", g2.textAlign = "center", g2.textBaseline = "middle", g2.fillText("POLYRUSH", 512, 112);
+    let st = new qo(sign), sm = new Je(new Lr(9, 2.25), new ci({ map: st }));
+    sm.position.set(0, 4.9, -W + 0.22), e.add(sm);
+    for (let k of [-1, 1]) i(3.2, 4.2, 0.06, n(k < 0 ? "#2443c9" : "#ff8a1f"), k * 9, 3.3, -W + 0.23), i(2.6, 0.5, 0.07, n("#f5f6fa"), k * 9, 4.6, -W + 0.24), i(0.6, 2.4, 0.07, n("#0f1847"), k * 9 - 0.6, 2.6, -W + 0.24);
+    i(DW + 2, 0.04, 70, n("#5f6a7c"), 0, -0.1, W + 35);
+    for (let k = 0; k < 10; k++) i(0.3, 0.05, 2.6, n("#f4f4f2"), 0, -0.07, W + 6 + k * 7);
+    let hillM = [n("#4f9a68"), n("#5fae78"), n("#3f8a58")];
+    for (let f = 0; f < 18; f++) {
+      let h = f / 18 * Math.PI * 2, x = 220 + lt(f, 2.7) * 120, b = new Je(new jo(1, 0), hillM[f % 3]);
+      b.scale.set(60 + lt(f, 1.1) * 50, 16 + lt(f, 4.4) * 26, 50 + lt(f, 9) * 30), b.position.set(Math.sin(h) * x, -2, Math.cos(h) * x), b.rotation.y = lt(f, 5) * 3, e.add(b);
+    }
+    return t.add(e), t.userData.door = door, t;
   }
   a(gB, "buildGarageMap");
   var Gm = { body: "#f5f6fa", accent: "#2f6bff", pattern: "stripes", patternColor: "#2f6bff", rim: "five", rimColor: "#c9ccd6", number: "7", exhaust: "track" }, xB = [["solid", "Solid"], ["stripes", "Twin Stripe"], ["center", "Center Stripe"], ["twotone", "Two-Tone"], ["checker", "Checker"], ["number", "Race Number"], ["flames", "Flames"], ["sash", "Sash"], ["chevron", "Chevron"], ["camo", "Camo"], ["carbon", "Carbon"], ["pinstripe", "Pinstripe"], ["dots", "Halftone"], ["bolt", "Lightning"], ["fade", "Fade"]], yB = [["five", "Five Spoke"], ["mesh", "Mesh"], ["tri", "Tri-Blade"], ["dish", "Deep Dish"], ["turbine", "Turbine"], ["disc", "Aero Disc"], ["ten", "Ten Spoke"], ["cross", "Cross"], ["split", "Split Seven"], ["wire", "Wire"], ["steelie", "Steelie"], ["star", "Star"]], Gl = 0.42, Om = 0.42, In = 0.3;
@@ -29373,6 +29412,18 @@ void main() {
       w.rotation.x = -0.4, f(new wt(1.98, 0.12, 2.2), l, 0, 0.95, -1.35);
       for (let T of [-1, 1]) f(new wt(0.12, 0.6, 2.2), s_(n, 0.12), T * 0.93, 1.3, -1.35), f(new wt(0.3, 0.3, 1.2), l, T * 1, 0.92, 1.75), f(new wt(0.3, 0.3, 1.2), l, T * 1, 0.92, -1.45), f(new wt(0.36, 0.2, 0.06), hl, T * 0.66, 1.32, 2.84, r, false), f(new wt(0.12, 0.34, 0.06), v, T * 0.88, 1.32, -2.47, r, false), f(new wt(0.1, 0.62, 0.1), c, T * 0.8, 1.88, -0.45);
       f(new wt(1.98, 0.6, 0.12), s_(n, 1.98), 0, 1.3, -2.42), f(new wt(1.6, 0.1, 0.12), c, 0, 2.2, -0.45), f(new wt(1.5, 0.46, 0.08), o, 0, 1.2, 2.84), f(new wt(2.1, 0.24, 0.3), l, 0, 0.78, 2.9), f(new wt(2.1, 0.24, 0.3), l, 0, 0.78, -2.5), f(new wt(1.95, 0.06, 1.8), c, 0, 2.11, 0.55);
+    } else if (TY === "admin") {
+      let gold = s("#ffc928"), glow = new ln({ color: "#ffd75e", emissive: "#ffb000", emissiveIntensity: 0.9 }), h = new wt(2.02, 0.46, 4.5, 1, 1, 3), x = h.attributes.position;
+      for (let T = 0; T < x.count; T++) {
+        let I = x.getZ(T);
+        I > 1 && x.getY(T) > 0 && x.setY(T, 0.23 - (I - 1) * 0.12);
+      }
+      h.computeVertexNormals(), f(h, s_(n, 2.02), 0, 0.56, 0);
+      f(new wt(1.36, 0.42, 1.7), gl, 0, 0.98, -0.25, r, false), f(new wt(1.4, 0.05, 1.5), c, 0, 1.2, -0.3);
+      let w = f(new wt(1.3, 0.44, 0.06), gl, 0, 0.95, 0.66, r, false);
+      w.rotation.x = -0.9;
+      for (let T of [-1, 1]) f(new wt(0.08, 0.1, 4.2), glow, T * 1.02, 0.42, 0, r, false), f(new wt(0.3, 0.32, 1.2), l, T * 0.86, 0.66, -1.1), f(new wt(0.5, 0.1, 0.06), hl, T * 0.66, 0.66, 2.26, r, false), f(new wt(0.5, 0.08, 0.06), v, T * 0.62, 0.74, -2.26, r, false), f(new wt(0.08, 0.5, 0.5), gold, T * 0.8, 1.12, -2.0);
+      f(new wt(2.25, 0.08, 0.6), gold, 0, 1.42, -2.05), f(new wt(2.15, 0.06, 0.4), l, 0, 0.22, 2.22), f(new wt(0.12, 0.42, 1.1), gold, 0, 1.25, -1.2), f(new wt(2.0, 0.12, 0.16), glow, 0, 0.5, -2.27, r, false), f(new wt(1.9, 0.05, 3.9), l, 0, 0.3, 0, r, false);
     } else {
       f(new wt(1.5, 0.3, 3.9), l, 0, 1.35, 0);
       for (let T of [-1, 1]) for (let I of [-1.6, 1.6]) {
@@ -29402,7 +29453,9 @@ void main() {
       }
       N.add(B), i.add(N), g.push({ pivot: N, w: B, front: P, baseY: TR, side: H });
     }
-    let _ = [], y = n.exhaust || "standard", E = s("#c9ccd6"), xg = new At(), w = a((T) => new ci({ color: T, transparent: true, opacity: 0.85, depthWrite: false }), "flameMat"), C = a((T, I, P, N, B, Hp = xg) => {
+    let preEx = /* @__PURE__ */ new Set();
+    i.traverse((q) => q.isMesh && preEx.add(q));
+    let _ = [], y = n.exhaust === "side" ? "standard" : n.exhaust || "standard", E = s("#c9ccd6"), xg = new At(), w = a((T) => new ci({ color: T, transparent: true, opacity: 0.85, depthWrite: false }), "flameMat"), C = a((T, I, P, N, B, Hp = xg) => {
       let H = new vl(N, 1, 8);
       H.rotateX(-Math.PI / 2), H.translate(0, 0, -0.5);
       let V = new Je(H, w(B));
@@ -29433,13 +29486,15 @@ void main() {
         f(I, E, T, Y0, Z0), C(T, Y0 + 0.36, Z0, 0.06, "#ff8a1f", r), _[_.length - 1].rotation.x = -Math.PI / 2;
       }
     } else for (let T of [-0.35, 0.35]) S(T, 0.42, -1.8, 0.07), C(T, 0.42, -2.05, 0.06, "#ff8a1f");
+    let exM = [];
+    i.traverse((q) => q.isMesh && !preEx.has(q) && exM.push(q));
     if (e) {
       let T = new ci({ color: "#9fb4ff", transparent: true, opacity: 0.3, depthWrite: false });
       i.traverse((I) => {
         I.isMesh && (I.material = T, I.castShadow = false);
       });
     }
-    return i.userData = { flames: e ? null : _, wheels: g, body: r, brake: v, cfg: n, jetPos: sp.jet }, i;
+    return i.userData = { flames: e ? null : _, wheels: g, body: r, brake: v, cfg: n, jetPos: sp.jet, exM }, i;
   }
   a(o_, "buildCar");
   function qR(t) {
@@ -29506,7 +29561,8 @@ void main() {
     racer: { label: "Racer", blurb: "Open-wheeler. Fast and planted, hates the grass.", top: 64, accel: 24, grip: 1, offGrip: 0.6, offDrag: 1, step: 0.7, inertia: 2.2, tipG: 999, vault: 1, wheelR: 0.42, wheelW: 0.42, rimK: 1, wheels: [[-0.98, 1.35, true], [0.98, 1.35, true], [-1, -1.3, false], [1, -1.3, false]], jr: [[2.25, 1.15], [2.25, -1.15], [-2.25, 1.22], [-2.25, -1.22]], wb: 2.65, tw: 1.98, cam: [7.2, 2.7, 1.3], ex: [0, 0], stack: [0.32, 1, -1.15], jet: [0, 0.82, -2.1], focus: [-0.5, 0.45, 1.1], stats: { Speed: 9, Acceleration: 8, Handling: 9, "Off-road": 3, Stability: 10 } },
     rally: { label: "Rally", blurb: "Hatchback on long springs. Happy on any surface.", top: 57, accel: 25, grip: 0.92, offGrip: 0.9, offDrag: 0.45, step: 0.9, inertia: 2.4, tipG: 34, vault: 1, wheelR: 0.4, wheelW: 0.34, rimK: 0.95, wheels: [[-0.84, 1.3, true], [0.84, 1.3, true], [-0.84, -1.25, false], [0.84, -1.25, false]], jr: [[2.05, 0.95], [2.05, -0.95], [-2.0, 0.95], [-2.0, -0.95]], wb: 2.55, tw: 1.68, cam: [7.4, 2.9, 1.4], ex: [-0.2, 0.05], stack: [0.3, 1.55, -1.1], jet: [0, 0.95, -2.3], focus: [-0.5, 0.45, 1.05], stats: { Speed: 7, Acceleration: 9, Handling: 8, "Off-road": 7, Stability: 7 } },
     truck: { label: "Truck", blurb: "Heavy pickup. Shrugs off hits, slow to get going.", top: 50, accel: 16, grip: 0.8, offGrip: 0.85, offDrag: 0.5, step: 1.1, inertia: 3.6, tipG: 22, vault: 1.1, wheelR: 0.55, wheelW: 0.42, rimK: 1.1, wheels: [[-0.98, 1.75, true], [0.98, 1.75, true], [-0.98, -1.45, false], [0.98, -1.45, false]], jr: [[2.75, 1.05], [2.75, -1.05], [-2.35, 1.05], [-2.35, -1.05]], wb: 3.2, tw: 1.96, cam: [8.6, 3.4, 1.7], ex: [-0.45, 0.12], stack: [0.75, 2.2, 0.0], jet: [0, 1.2, -2.6], focus: [-0.55, 0.55, 1.5], stats: { Speed: 6, Acceleration: 4, Handling: 5, "Off-road": 7, Stability: 5 } },
-    monster: { label: "Monster truck", blurb: "Eats rough ground. Slow off the line and tips over fast.", top: 46, accel: 12.5, grip: 0.74, offGrip: 1, offDrag: 0.12, step: 1.8, inertia: 3, tipG: 13.5, vault: 0.8, wheelR: 1, wheelW: 0.8, rimK: 1.7, wheels: [[-1.35, 1.6, true], [1.35, 1.6, true], [-1.35, -1.6, false], [1.35, -1.6, false]], jr: [[2.5, 1.6], [2.5, -1.6], [-2.5, 1.6], [-2.5, -1.6]], wb: 3.2, tw: 2.7, cam: [10, 4.6, 2.2], ex: [-0.2, 1.3], stack: [0.7, 3.5, -1], jet: [0, 2.2, -2.4], focus: [-0.9, 1, 1.4], stats: { Speed: 5, Acceleration: 3, Handling: 4, "Off-road": 10, Stability: 2 } }
+    monster: { label: "Monster truck", blurb: "Eats rough ground. Slow off the line and tips over fast.", top: 46, accel: 12.5, grip: 0.74, offGrip: 1, offDrag: 0.12, step: 1.8, inertia: 3, tipG: 13.5, vault: 0.8, wheelR: 1, wheelW: 0.8, rimK: 1.7, wheels: [[-1.35, 1.6, true], [1.35, 1.6, true], [-1.35, -1.6, false], [1.35, -1.6, false]], jr: [[2.5, 1.6], [2.5, -1.6], [-2.5, 1.6], [-2.5, -1.6]], wb: 3.2, tw: 2.7, cam: [10, 4.6, 2.2], ex: [-0.2, 1.3], stack: [0.7, 3.5, -1], jet: [0, 2.2, -2.4], focus: [-0.9, 1, 1.4], stats: { Speed: 5, Acceleration: 3, Handling: 4, "Off-road": 10, Stability: 2 } },
+    admin: { label: "Admin", admin: true, blurb: "Staff-only hypercar. Gold trim, glowing seams, zero chill.", top: 76, accel: 31, grip: 1.12, offGrip: 0.8, offDrag: 0.6, step: 0.8, inertia: 2.3, tipG: 999, vault: 1.1, wheelR: 0.44, wheelW: 0.42, rimK: 1.05, wheels: [[-1, 1.45, true], [1, 1.45, true], [-1.04, -1.38, false], [1.04, -1.38, false]], jr: [[2.4, 1.18], [2.4, -1.18], [-2.3, 1.22], [-2.3, -1.22]], wb: 2.83, tw: 2.04, cam: [7.5, 2.7, 1.3], ex: [-0.25, 0.08], stack: [0.42, 1.25, -1.45], jet: [0, 0.92, -2.35], focus: [-0.5, 0.45, 1.2], stats: { Speed: 10, Acceleration: 10, Handling: 9, "Off-road": 5, Stability: 9 } }
   };
   function PRspec(cfg) {
     let t = PR_TYPES[cfg?.type] || PR_TYPES.racer, x = cfg?.exhaust;
@@ -29595,7 +29651,7 @@ void main() {
       })), this.def = t, this.season = Hn[t.season] || Hn.summer, this.data = Hl(t);
       let e = new At();
       let PRt = r_(this.data, this.season, t.mountain, t.terrain);
-      this.props = PRt.userData.props ? PRgrid(PRt.userData.props, 16) : null, e.add(Lm(this.season), PRt, i_(this.data, this.season), n_(t.blocks)), this.blocks = t.blocks || [], this.trackGroup = e, this.scene.add(e), this.scene.fog = new ro(this.season.fog, 260, t.mountain ? 1900 : 1500), this.hemi.groundColor.set(this.season.ground), this.sun.intensity = this.season.sun, this.flyS = this.data.startIdx, this.setBest(null), this.restart();
+      this.garageDoor = null, this.props = PRt.userData.props ? PRgrid(PRt.userData.props, 16) : null, e.add(Lm(this.season), PRt, i_(this.data, this.season), n_(t.blocks)), this.blocks = t.blocks || [], this.trackGroup = e, this.scene.add(e), this.scene.fog = new ro(this.season.fog, 260, t.mountain ? 1900 : 1500), this.hemi.groundColor.set(this.season.ground), this.sun.intensity = this.season.sun, this.flyS = this.data.startIdx, this.setBest(null), this.setupAI(t), this.restart();
     }
     loadGarage(t) {
       this.trackGroup && (this.scene.remove(this.trackGroup), this.trackGroup.traverse((n) => {
@@ -29604,7 +29660,8 @@ void main() {
         });
       })), this.def = t, this.season = Hn[t.season] || Hn.summer, this.data = Hl(t);
       let e = new At();
-      e.add(Lm(this.season), gB()), this.trackGroup = e, this.scene.add(e), this.scene.fog = new ro(this.season.fog, 260, 1500), this.hemi.groundColor.set("#41604c"), this.sun.intensity = 1.5, this.blocks = [], this.props = null, Object.assign(this.c, this.freshState(), { x: 0, z: 0, y: 0, th: -0.55 }), this.fx.clear(), this.orbit = 0;
+      let GG = gB();
+      this.garageDoor = GG.userData.door, this.clearAI(), e.add(Lm(this.season), GG), this.trackGroup = e, this.scene.add(e), this.scene.fog = new ro(this.season.fog, 260, 1500), this.hemi.groundColor.set("#6b7180"), this.sun.intensity = 1.25, this.blocks = [], this.props = null, Object.assign(this.c, this.freshState(), { x: 0, z: 0, y: 0, th: 0 }), this.fx.clear(), this.orbit = 0;
     }
     setBest(t) {
       this.best = t, this.ghostCar && (this.scene.remove(this.ghostCar), qR(this.ghostCar), this.ghostCar = null), t?.ghost?.length && (this.ghostCar = o_({ type: this.carCfg?.type }, true), this.ghostCar.visible = false, this.scene.add(this.ghostCar));
@@ -29617,7 +29674,7 @@ void main() {
       Object.assign(this.c, this.freshState(), { x: e.x, z: e.z, y: e.y, gyPrev: e.y, th: Math.atan2(e.tx, e.tz), idx: t }), this.fx.clear();
     }
     restart() {
-      this.data && (this.placeAt(this.data.startIdx - 7), this.state = "ready", this.time = 0, this.next = 0, this.splits = [], this.lastCp = -1, this.rec = [], this.recTick = 0, this.snapCamera = true, this.hooks.onReset?.());
+      this.data && (this.placeAt(this.data.startIdx - 7), this.state = "ready", this.time = 0, this.next = 0, this.splits = [], this.lastCp = -1, this.rec = [], this.recTick = 0, this.snapCamera = true, this.resetAI(), this.hooks.onReset?.());
     }
     respawn() {
       if (this.state !== "running" || this.lastCp < 0) {
@@ -29625,6 +29682,57 @@ void main() {
         return;
       }
       this.placeAt(this.data.cps[this.lastCp]), this.snapCamera = true;
+    }
+    clearAI() {
+      for (let a0 of this.ai || []) this.scene.remove(a0.m), qR(a0.m);
+      this.ai = [], this._place = null;
+    }
+    setupAI(def) {
+      this.clearAI();
+      let cfg = def?.ai;
+      if (!cfg || !cfg.count) return;
+      let lv = { easy: 0.8, medium: 0.9, hard: 0.985 }[cfg.level] || 0.9, cols = [["#ff3b3b", "#f5f6fa"], ["#2fd3a0", "#14161c"], ["#ffc928", "#2a2e38"], ["#8a4dff", "#f5f6fa"], ["#ff8a1f", "#14161c"], ["#5fa0ff", "#f5f6fa"], ["#f5f6fa", "#ff3b3b"]], tys = ["racer", "rally", "racer", "truck", "rally", "racer", "racer"], names = ["Volt", "Nova", "Rook", "Juno", "Blaze", "Kite", "Echo"];
+      for (let k = 0; k < Math.min(7, cfg.count); k++) {
+        let [body, accent] = cols[k], m = o_({ ...Gm, type: tys[k], body, accent, patternColor: accent, pattern: ["stripes", "center", "number", "twotone"][k % 4], number: String(k + 2), exhaust: "standard" });
+        m.visible = false, this.scene.add(m), this.ai.push({ m, k, row: Math.floor((k + 1) / 2), lane0: (k + 1) % 2 ? 3.6 : -3.6, skill: lv * (0.965 + (k * 37 % 7) / 100), name: names[k] });
+      }
+    }
+    resetAI() {
+      if (!this.ai?.length || !this.data) return;
+      for (let a0 of this.ai) a0.s = this.data.startIdx - 7 - a0.row * 7, a0.lane = a0.lane0, a0.v = 0, a0.done = null, a0.wa = 0, this.aiPose(a0);
+      this._place = null;
+    }
+    aiPose(a0) {
+      let n = this.data.samples, i0 = Math.max(0, Math.min(n.length - 2, Math.floor(a0.s))), f = Math.min(1, Math.max(0, a0.s - i0)), p = n[i0], q = n[i0 + 1];
+      a0.x = p.x + (q.x - p.x) * f + p.nx * a0.lane, a0.z = p.z + (q.z - p.z) * f + p.nz * a0.lane, a0.y = p.y + (q.y - p.y) * f, a0.th = Math.atan2(p.tx, p.tz);
+    }
+    updateAI(t) {
+      let n = this.data.samples, e = this.c, top = this.spec.top, ac = this.spec.accel;
+      for (let a0 of this.ai) {
+        let tp = Math.min(top, PR_TYPES.racer.top) * a0.skill * (a0.done != null ? 0.35 : 1), acc = Math.min(ac, 26) * a0.skill;
+        a0.v = Math.max(0, a0.v + (a0.v < tp ? acc * Math.max(0.18, 1 - a0.v / tp) : -9) * t), a0.s += a0.v * t, a0.s >= n.length - 8 && (a0.s = n.length - 8, a0.v = 0), a0.done == null && a0.s >= this.data.finishIdx && (a0.done = this.time), a0.lane += (a0.lane0 - a0.lane) * Math.min(1, t * 0.4), a0.lane = yr(a0.lane, -5.4, 5.4), this.aiPose(a0);
+        let fx = Math.sin(a0.th), fz = Math.cos(a0.th), rx = e.x - a0.x, rz = e.z - a0.z, lon = rx * fx + rz * fz, lat = rx * fz - rz * fx, pl = 4.4 - Math.abs(lon), pw = 2.15 - Math.abs(lat);
+        if (pl > 0 && pw > 0 && Math.abs(e.y - a0.y) < 1.6) {
+          let side = pw < pl, sg = Math.sign(side ? lat : lon) || 1, nx = side ? fz * sg : fx * sg, nz = side ? -fx * sg : fz * sg, pen = side ? pw : pl;
+          e.x += nx * pen * 0.75, e.z += nz * pen * 0.75, side && (a0.lane -= sg * pen * 0.25);
+          let rel = (e.vx - fx * a0.v) * nx + (e.vz - fz * a0.v) * nz;
+          if (rel < 0) {
+            let j = -rel * 0.62;
+            e.vx += nx * j, e.vz += nz * j, a0.v = Math.max(0, a0.v - (nx * fx + nz * fz) * j * 0.8), this.hitFx(-rel, (e.x + a0.x) / 2, (e.z + a0.z) / 2);
+          }
+        }
+      }
+      let prog = (a0) => a0.done != null ? 1e7 - a0.done : a0.s, me = this.state === "finished" ? 1e7 - this.time : e.idx, place = 1 + this.ai.filter((a0) => prog(a0) > me).length;
+      place !== this._place && (this._place = place, this.hooks.onPlace?.(place, this.ai.length + 1));
+    }
+    renderAI(dt) {
+      for (let a0 of this.ai || []) {
+        let m = a0.m, ud = m.userData;
+        if (m.visible = this.mode === "race", !m.visible) continue;
+        m.position.set(a0.x, a0.y, a0.z), m.rotation.set(0, a0.th, 0), a0.wa += a0.v / 0.42 * dt;
+        for (let w of ud.wheels) w.w.rotation.x = a0.wa;
+        if (ud.flames) for (let fl of ud.flames) fl.visible = this.state === "running" && a0.done == null, fl.scale.set(1, 1, 0.8 + Math.random() * 0.5);
+      }
     }
     terrainAt(t, e) {
       return xa(this.data.samples, t, e, this.def.mountain, this.def.terrain).h;
@@ -29639,10 +29747,10 @@ void main() {
       return c;
     }
     contact(t, e, n, i, r) {
-      let s = this.c, I0 = this.spec.inertia, o = -i, l = n, c = e * n - t * i, u = r > 3 ? 0.38 : 0.05, d = (1 + u) * r / (1 + c * c / I0);
-      s.vx -= d * n, s.vz -= d * i, s.w -= d * c / I0;
-      let p = (s.vx + s.w * e) * o + (s.vz - s.w * t) * l, f = e * o - t * l, h = yr(p / (1 + f * f / I0), -0.12 * d, 0.12 * d);
-      s.vx -= h * o, s.vz -= h * l, s.w -= h * f / I0, s.w = yr(s.w, -5, 5), s.wallT = Math.max(s.wallT, r > 3 ? 0.22 : 0.05), s.wallN = [n, i];
+      let s = this.c, I0 = this.spec.inertia * 2.6, c = e * n - t * i, hard = r > 4.5, rest = hard ? Math.min(0.3, 0.12 + r * 6e-3) : 0, d = hard ? (1 + rest) * r / (1 + c * c / I0) : r;
+      s.vx -= d * n, s.vz -= d * i, hard && (s.w -= yr(d * c / I0, -1.1, 1.1));
+      let o = -i, l = n, vt = s.vx * o + s.vz * l, h = yr(vt, -0.07 * d, 0.07 * d);
+      s.vx -= h * o, s.vz -= h * l, s.w = yr(s.w, -4, 4), s.wallT = Math.max(s.wallT, hard ? 0.22 : 0.05), s.wallN = [n, i];
       this.spec.tipG < 30 && r > 9 && !s.air && (s.tipV += Math.sign(c || 1) * Math.min(3, (r - 9) * 0.12) * (30 / this.spec.tipG));
     }
     hitFx(t, e, n) {
@@ -29733,6 +29841,7 @@ void main() {
       let e = this.c, n = this.data.samples, i = this.input();
       if (this.state === "ready") if (i.up || i.down) this.state = "running", this.hooks.onStart?.();
       else return;
+      this.ai?.length && this.updateAI(t);
       let r = this.state === "finished", s = !r && i.up ? 1 : 0, o = r ? 0.35 : i.down ? 1 : 0, l = r ? 0 : (i.left ? 1 : 0) - (i.right ? 1 : 0);
       e.steer += (l - e.steer) * Math.min(1, t * (l ? 7 : 10));
       let sp = this.spec, G0 = QR * (this.season.gravity || 1);
@@ -29745,25 +29854,17 @@ void main() {
       let c = Math.sin(e.th), u = Math.cos(e.th), d = e.vx * c + e.vz * u, p = -e.vx * u + e.vz * c, f = this.season.grip * sp.grip * (e.off ? sp.offGrip : 1) * (Math.abs(e.tip) > 0.3 ? 0.5 : 1), h = this.jet, x = sp.top, b = sp.accel, v = !e.air && i.drift && Math.abs(d) > 12 && !r, m = 0.22, g = false;
       if (this.top = x, e.vault = Math.max(0, e.vault - t), e.wallT = Math.max(0, e.wallT - t), e.air) d *= Math.exp(-0.02 * t), p *= Math.exp(-0.3 * t), e.w *= Math.exp(-0.8 * t), e.ws = s ? Math.min(x * 1.4, e.ws + b * 5 * t) : e.ws * Math.exp(-0.8 * t);
       else {
-        let Y = 0;
-        if (s && (Y = b * (1 + m) * Math.max(0, 1 - Math.max(0, e.ws) / x) * (d < 0 ? 2 : 1)), o && d > 0.5) d -= bB * o * t, g = !r && d > 8, e.ws = g ? d * 0.08 : d;
-        else {
-          if (o && !r && (Y = -14 * (1 + m) * Math.max(0, 1 + Math.min(0, e.ws) / 14)), e.ws += Y / m * t, !s && !o) {
-            let ve = (1.4 + 5e-4 * d * d) * t;
-            d = Math.abs(d) <= ve ? 0 : d - Math.sign(d) * ve, e.ws += (d - e.ws) * Math.min(1, t * 20);
-          }
-          let pe = f / 8.5 * 34 * t * (v ? 0.8 : 1), ue = yr(m * (e.ws - d) / (1 + m), -pe, pe);
-          d += ue, e.ws -= ue / m;
-        }
-        if (e.off) {
-          let pe = (2.5 + 4e-3 * d * d) * sp.offDrag * t;
-          d = Math.abs(d) <= pe ? 0 : d - Math.sign(d) * pe;
-        }
-        d -= G0 / 1.8 * Math.sin(e.gp) * t;
-        let ee = Math.abs(d), re = Math.min(1, Math.max(ee, e.wallT > 0 ? 3 : 0) / 5), _e = e.steer * MB * (v ? 1.25 : 1) * re / (1 + ee / 52) * (d < 0 ? -1 : 1), He = (12 * Math.min(1, f / 8.5) + 3) * (v ? 0.6 : 1);
-        e.w += (_e - e.w) * Math.min(1, t * He);
-        let ze = (v ? 0.28 : 1) * f * (1 + Math.min(0.3, ee / 200)) * (e.wallT > 0.05 ? 0.35 : 1), ie = p * Math.exp(-ze * t);
-        d += 0, p = ie;
+        let ad = Math.abs(d), mu = Math.max(0.12, f / 8.5), F = 0, d0 = d;
+        s && (F += d < -0.5 ? bB : b * Math.max(0, 1 - Math.pow(Math.max(0, d) / x, 1.8)) * (d < 0 ? 1.4 : 1));
+        o && (d > 0.5 ? (F -= bB * o, g = !r && d > 8) : r || (F -= 15 * Math.max(0, 1 + Math.min(0, d) / 14)));
+        let drag = 0.3 + 8e-4 * d * d + (!s && !o ? 1.5 : 0) + (e.off ? (2.5 + 4e-3 * d * d) * sp.offDrag : 0), nd = d + F * t;
+        nd -= Math.sign(nd) * Math.min(Math.abs(nd), drag * t), nd -= G0 / 1.8 * Math.sin(e.gp) * t;
+        o && d0 > 0.5 && nd < 0 && (nd = 0), s && d0 < -0.5 && nd > 0 && (nd = 0), nd > x * 1.03 && (nd -= (nd - x) * Math.min(1, t * 1.5)), nd < -15 && (nd = -15);
+        let mxS = 0.6 / (1 + ad / 24), wK = d * Math.tan(e.steer * mxS) / sp.wb, lim = 36 * Math.sqrt(mu) * (v ? 1.5 : 1) / Math.max(5, ad), wT = yr(wK, -lim, lim);
+        e.w += (wT - e.w) * Math.min(1, t * (v ? 5 : 11) * Math.max(0.4, Math.sqrt(mu)));
+        let kL = (v ? 1.4 : 7.5) * mu, np = p * Math.exp(-kL * t), cap = (v ? 14 : 32) * mu * t;
+        Math.abs(p - np) > cap && (np = p - Math.sign(p) * cap), nd -= Math.sign(nd) * Math.min(Math.abs(nd), Math.abs(p - np) * 0.1);
+        d = nd, p = np, g ? e.ws = d * 0.08 : e.ws += (d + (s && d >= 0 && d < 18 ? (18 - d) * 0.35 : 0) - e.ws) * Math.min(1, t * 12);
       }
       e.th += e.w * t, e.vx = c * d - u * p, e.vz = u * d + c * p, e.vf = d, e.vl = p, e.x += e.vx * t, e.z += e.vz * t;
       let _ = e.idx;
@@ -29805,7 +29906,7 @@ void main() {
         ee > I + 0.06 + Math.min(0.12, B0 * 2e-3) ? (e.air = true, e.airT = 0, e.y = ee, e.vy = Y) : (e.y = I, e.vy = N);
       }
       let B = Math.abs(d), H = e.air ? Math.atan2(e.vy, Math.max(8, B)) * 0.7 : e.gp;
-      e.pitch += (H - e.pitch) * Math.min(1, t * (e.air ? 2 : 10)), e.roll += ((e.air ? 0 : P) - p * 0.012 - e.w * B * 18e-4 - e.roll) * Math.min(1, t * 6), e.susp = sp.wheels.map(([Y, ee], re) => e.air ? -0.07 * sp.wheelR / 0.42 : yr(T[re] - (e.y + Math.tan(e.pitch) * ee + Math.tan(e.roll) * Y), -0.15 * sp.wheelR / 0.42, 0.15 * sp.wheelR / 0.42));
+      e.pitch += (H - e.pitch) * Math.min(1, t * (e.air ? 2 : 10)), e.roll += ((e.air ? 0 : P) - e.roll) * Math.min(1, t * 6), e.susp = sp.wheels.map(([Y, ee], re) => e.air ? -0.07 * sp.wheelR / 0.42 : yr(T[re] - (e.y + Math.tan(e.pitch) * ee + Math.tan(e.roll) * Y), -0.15 * sp.wheelR / 0.42, 0.15 * sp.wheelR / 0.42));
       if (sp.tipG < 100 && !e.air) {
         let lat = d * e.w, ex = Math.abs(lat) - sp.tipG, push = ex > 0 ? -Math.sign(lat) * ex * 0.11 : 0, over = Math.abs(e.tip) > 0.8;
         e.tipV += (push - e.tip * (over ? -4 : 22) - e.tipV * 5) * t, e.tip += e.tipV * t, Math.abs(e.tip) < 2e-3 && Math.abs(e.tipV) < 0.01 && (e.tip = 0, e.tipV = 0), Math.abs(e.tip) > 1.35 && (e.flipped = 1e-3, this.shake = 1, this.audio.bump(30));
@@ -29814,7 +29915,7 @@ void main() {
       e.wf = e.air ? e.wf * Math.exp(-t * 0.6) : g ? V * 0.08 : V, e.wr += (k - e.wr) * Math.min(1, t * 14), e.aF += e.wf * t, e.aR += e.wr * t, e.braking = !!o && !r, e.throttle = s, e.slip = e.air ? 0 : Math.min(1.5, Math.max(Math.abs(e.ws - d) / 12, Math.abs(p) / (v ? 5 : 9), g ? B / 30 : 0)), e.rev = e.air && s ? Math.min(1.2, e.ws / x) : 0;
       let F = yr((d - e.mPrev) / t, -40, 40);
       e.mPrev = d;
-      let L = yr(-F * 35e-4, -0.08, 0.08), W = yr(d * e.w * 25e-4, -0.07, 0.07);
+      let L = yr(-F * 35e-4, -0.08, 0.08), W = yr(d * e.w * 3e-3 + p * 6e-3, -0.085, 0.085);
       if (e.bpv += ((L - e.bp) * 140 - e.bpv * 16) * t, e.bp += e.bpv * t, e.brv += ((W - e.br) * 140 - e.brv * 16) * t, e.br += e.brv * t, e.bhv += ((0 - e.bh) * 160 - e.bhv * 14) * t, e.bh = yr(e.bh + e.bhv * t, -0.18, 0.12), e.fxT -= t, e.slip > 0.35 && e.fxT <= 0 && (e.fxT = 1 / 28, this.puff(1, 0.5 + e.slip * 0.5)), this.state === "running") {
         e.offT = e.off ? e.offT + t : 0;
         let Y = e.off ? Math.ceil(Math.max(0, 5 - e.offT)) : null;
@@ -29824,7 +29925,7 @@ void main() {
         }
         this.time += t, this.recTick++ % (120 / KR) === 0 && this.rec.push(+e.x.toFixed(2), +e.y.toFixed(2), +e.z.toFixed(2), +e.th.toFixed(3));
         let ee = this.data.cps;
-        e.off || (this.next < ee.length && _ >= ee[this.next] && _ < ee[this.next] + 30 ? (this.splits.push(this.time), this.lastCp = this.next, this.hooks.onCheckpoint?.(this.next, this.time), this.audio.blip(), this.next++) : this.next === ee.length && _ >= this.data.finishIdx && (this.state = "finished", this.audio.finish(), this.hooks.onFinish?.({ time: this.time, splits: this.splits, ghost: this.rec })));
+        e.off || (this.next < ee.length && _ >= ee[this.next] && _ < ee[this.next] + 30 ? (this.splits.push(this.time), this.lastCp = this.next, this.hooks.onCheckpoint?.(this.next, this.time), this.audio.blip(), this.next++) : this.next === ee.length && _ >= this.data.finishIdx && (this.state = "finished", this.audio.finish(), this.hooks.onFinish?.({ time: this.time, splits: this.splits, ghost: this.rec, place: this.ai?.length ? 1 + this.ai.filter((a0) => a0.done != null && a0.done < this.time).length : null, field: this.ai?.length ? this.ai.length + 1 : null })));
       }
     }
     puff(t, e) {
@@ -29862,11 +29963,14 @@ void main() {
         return;
       }
       if (this.mode === "race") for (this.acc += e; this.acc >= a_; this.acc -= a_) this.step(a_);
-      if (this.fx.update(e), this.mode === "cutscene") {
+      if (this.fx.update(e), this.renderAI(e), this.mode === "cutscene") {
         let c = this.c;
         this.csT = (this.csT || 0) + e;
-        let u = this.csT, d = u < 0.35 ? 0 : Math.min(48, (u - 0.35) * 19), p = 0.75 + 2.35, f = Math.atan2(Math.sin(p - c.th), Math.cos(p - c.th));
-        c.steer = yr(f * 1.4, -1, 1), d > 0 && (c.th += yr(f, -1, 1) * e * Math.min(1.4, d / 8)), c.vf = d, c.vx = Math.sin(c.th) * d, c.vz = Math.cos(c.th) * d, c.x += c.vx * e, c.z += c.vz * e, c.aF += d / this.spec.wheelR * e, c.aR += (d / this.spec.wheelR + (u < 1.2 ? 30 : 0)) * e, c.throttle = 1, c.pitch += ((u > 0.35 && u < 1 ? 0.04 : 0) - c.pitch) * Math.min(1, e * 6), c.susp = [0, 0, 0, 0], (c.fxT = (c.fxT || 0) - e) <= 0 && u > 0.3 && u < 1.6 && (c.fxT = 1 / 24, this.puff(1, 0.9));
+        let u = this.csT, dr = this.garageDoor, k = Math.min(1, Math.max(0, (u - 0.25) / 1.45)), go = u > 1.45, tg = u - 1.45, d = go ? Math.min(34, tg * 7 + tg * tg * 7) : 0;
+        dr && (dr.scale.y = Math.max(0.03, 1 - k * k * (3 - 2 * k)), dr.position.x = (Math.random() - 0.5) * 0.02 * (k > 0 && k < 1 ? 1 : 0));
+        c.steer = 0, c.th = 0, c.x = 0, c.vf = d, c.vx = 0, c.vz = d, c.z += d * e, c.aF += d / this.spec.wheelR * e, c.aR += (d / this.spec.wheelR + (go && tg < 0.7 ? 28 : 0)) * e, c.throttle = go ? 1 : 0, c.pitch += ((go && tg < 0.6 ? 0.04 : 0) - c.pitch) * Math.min(1, e * 6), c.susp = [0, 0, 0, 0], c.braking = false;
+        (c.fxT = (c.fxT || 0) - e) <= 0 && go && tg < 1.3 && (c.fxT = 1 / 24, this.puff(1, 0.9));
+        u < 0.05 && this.audio.start(), this.audio.update(Math.min(1, d / 40), go, go && tg < 0.7 ? 0.6 : 0, 0);
       }
       let n = this.c, i = this.car, r = i.userData;
       i.position.set(n.x, n.y, n.z), i.rotation.order = "YXZ", i.rotation.set(-n.pitch, n.th, n.roll + (n.tip || 0)), r.body.position.y = n.bh, r.body.rotation.x = n.bp, r.body.rotation.z = n.br;
@@ -29875,7 +29979,7 @@ void main() {
         c.w.rotation.x = s ? 0 : c.front ? n.aF : n.aR, c.front && (c.pivot.rotation.y = s ? 0.38 : n.steer * 0.42), c.pivot.position.y = c.baseY + (s ? 0 : Math.max(-0.08, Math.min(0.08, n.susp?.[u] ?? 0)));
       }), r.flames) {
         let c = this.mode === "race" && n.throttle && this.state !== "finished", u = r.cfg.exhaust === "jet";
-        for (let d of r.flames) d.visible = !!c || this.mode === "cutscene", d.scale.set(1, 1, (u ? 1.6 : 0.8) + Math.random() * (u ? 1.2 : 0.5));
+        for (let d of r.flames) d.visible = !!c || this.mode === "cutscene" && n.throttle, d.scale.set(1, 1, (u ? 1.6 : 0.8) + Math.random() * (u ? 1.2 : 0.5));
         if (u && c && Math.random() < 0.7) {
           i.updateMatrixWorld();
           let J0 = r.jetPos || [0, 0.82, -2.1], d = i.localToWorld(this._v2.set(J0[0], J0[1] - 0.07, J0[2] - 0.5));
@@ -29892,7 +29996,10 @@ void main() {
         o.position.set(n.x - c * p, n.y + f, n.z - u * p), this.snapCamera = false, this.shake = 0, o.lookAt(n.x + c * 5, n.y + h0, n.z + u * 5);
         let b = this.fov || 70;
         o.fov !== b && (o.fov = b, o.updateProjectionMatrix()), this.audio.update(d / (this.top || jR), this.input().up && this.state !== "finished", n.slip, n.rev), this.hooks.onFrame?.(this.time, d * 3.6, this.state);
-      } else if (this.mode === "cutscene") this._v2.set(n.x, n.y + 0.8, n.z), o.lookAt(this._v2), o.fov += (40 - o.fov) * Math.min(1, e * 0.8), o.updateProjectionMatrix();
+      } else if (this.mode === "cutscene") {
+        let K1 = this.spec.cam[0] / 7.2;
+        o.position.lerp(this._v1.set(-5.2 * K1, 2.6 * K1, -7.5 * K1), 1 - Math.exp(-e * 2.2)), this._v2.set(n.x, n.y + 0.9, n.z + Math.min(6, n.z * 0.3)), o.lookAt(this._v2), o.fov += (46 - o.fov) * Math.min(1, e * 1.2), o.updateProjectionMatrix();
+      }
       else if (s) {
         let c = this.garageYaw, u = this.garageFocus === "wheel", K0 = this.spec.cam[0] / 7.2, d = (u ? 4.4 : 9.5) * K0, p = u ? 0.9 : 2.1, f = this._v1.set(n.x + Math.sin(c) * d, n.y + (u ? 1.2 : 3.4) * K0, n.z + Math.cos(c) * d);
         o.position.lerp(f, 1 - Math.exp(-e * 5)), u ? (i.updateMatrixWorld(), i.localToWorld(this._v2.set(...this.spec.focus)), this._v2.x += Math.cos(c) * p, this._v2.z -= Math.sin(c) * p, o.lookAt(this._v2)) : o.lookAt(n.x + Math.cos(c) * p, n.y + 0.9 * K0, n.z - Math.sin(c) * p), o.fov !== 50 && (o.fov = 50, o.updateProjectionMatrix());
@@ -29916,7 +30023,7 @@ void main() {
   }
   a(l_, "HudBox");
   function Um({ children: t, on: e, off: n, accent: i, small: r }) {
-    return (0, A.jsx)("button", { onPointerDown: e, onPointerUp: n, onPointerLeave: n, onPointerCancel: n, className: `-skew-x-[8deg] touch-none font-bold italic ${r ? "h-16 w-20 text-[14px]" : "h-20 w-20 text-[22px]"} ${i ? "bg-[#2443c9]/90" : "bg-[#16215c]/85"} active:bg-[#3d5bff]`, children: (0, A.jsx)("span", { className: "inline-block skew-x-[8deg]", children: t }) });
+    return (0, A.jsx)("button", { onPointerDown: e, onPointerUp: n, onPointerLeave: n, onPointerCancel: n, className: `pr-touch-wide -skew-x-[8deg] touch-none font-bold italic ${r ? "h-16 w-20 text-[14px]" : "h-20 w-20 text-[22px]"} ${i ? "bg-[#2443c9]/90" : "bg-[#16215c]/85"} active:bg-[#3d5bff]`, children: (0, A.jsx)("span", { className: "inline-block skew-x-[8deg]", children: t }) });
   }
   a(Um, "TouchBtn");
   function Pm({ def: t, size: e = "100%" }) {
@@ -30199,11 +30306,15 @@ void main() {
   a(XB, "LeaderboardScreen");
   var ZB = `
   @keyframes streak { 0% { transform: translateX(-120%); } 100% { transform: translateX(320%); } }
+  .pr-streak, [class*="streak"] { display:none !important; }
   @keyframes pop { 0% { opacity: 0; transform: translateY(8px) scale(.96); } 12% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; } }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   @keyframes pulse { 0%,100% { opacity: .55 } 50% { opacity: 1 } }
   @keyframes fadeout { 0%,70% { opacity: 0 } 100% { opacity: 1 } }
   .pr-range { width: 100%; accent-color: #ffc928; cursor: pointer; }
+  .pr-ai-chip { display:inline-flex; align-items:center; gap:7px; background:#16215c; padding:8px 10px; color:#dfe4ff; font:italic 600 14px 'Chakra Petch',sans-serif; }
+  @media (max-width: 700px) { .pr-mobile-stack { grid-template-columns: 1fr !important; } .pr-touch-wide { width: 76px !important; height: 76px !important; } }
+  @media (pointer: coarse) { button { -webkit-tap-highlight-color: transparent; } }
   .pr-tile { min-height: 64px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: 2px solid transparent; background: #16215c; color: #dfe4ff; cursor: pointer; font: inherit; font-size: 12px; font-style: italic; }
   .pr-tile:hover { background: #22308a; border-color: #b9c5ff; }
   .pr-row { display: flex; align-items: center; gap: 7px; min-height: 30px; padding: 3px 4px 3px 10px; color: #dfe4ff; cursor: pointer; font-size: 14px; font-style: italic; }
@@ -30241,7 +30352,7 @@ void main() {
     n.stopPropagation(), t();
   }, className: "cursor-pointer bg-[#0b1238]/85 px-2 py-0.5 text-[13px] font-semibold italic text-[#dfe4ff] hover:bg-[#2443c9]", children: e }), "Mini");
   function KB() {
-    let t = at.useRef(null), e = at.useRef(null), n = VR("scores"), i = VR("community"), [r, s] = at.useState("menu"), [o, l] = at.useState(() => vr("trackId", Vm[vr("track", 0)]?.id || "s1")), [c, u] = at.useState(() => ({ ghost: true, editor3d: false, fov: 70, stats: true, seen: 0, ...vr("settings", {}) })), [d, p] = at.useState(null), [f, h] = at.useState(null), [x, b] = at.useState(() => ({ ...Gm, ...vr("car", null) || { accent: vr("accent", Gm.accent) } })), [v, m] = at.useState(() => vr("bests", {})), [g, _] = at.useState(() => vr("custom", [])), [y, E] = at.useState(() => vr("profile", null)), [w, C] = at.useState(() => vr("sound", true)), [S, T] = at.useState(false), [I, P] = at.useState({ cp: 0, state: "ready", result: null }), [N, B] = at.useState(null), [H, V] = at.useState(null), [k, F] = at.useState(null), [L, W] = at.useState(null), [Y, ee] = at.useState(null), [re, _e] = at.useState(null), [tutorial, setTutorial] = at.useState(() => vr("tutorial", null)), [testPlace, setTestPlace] = at.useState(false), He = at.useRef(vr("ghosts", {})), ze = at.useRef(null), ie = at.useRef(null), pe = at.useMemo(() => i.items.filter((U) => Array.isArray(U.flat) && U.flat.length >= 12 && Hn[U.season] && (U.status === "approved" || !U.status)).map((U) => ({ id: "c-" + U.id, docId: U.id, title: String(U.name || "Untitled").slice(0, 28), name: `by ${U.author || "someone"}`, season: U.season, pts: Nm(U.flat), cpCount: U.cpCount || 3, community: true, authorKey: U.authorKey, ...Jv(U.objects) })), [i.items]), ue = at.useMemo(() => g.map(u_), [g]), ve = at.useMemo(() => [...Object.entries(Hn).map(([U, oe]) => ({ id: U, label: oe.label, icon: oe.icon, tracks: Vm.filter((z) => z.season === U) })), { id: "mine", label: "My tracks", icon: "✎", tracks: ue }, { id: "community", label: "Community", icon: "★", tracks: pe.filter((U) => !g.some((oe) => oe.id === U.docId)) }], [ue, pe, g]), Ve = at.useMemo(() => ve.flatMap((U) => U.tracks), [ve]), Ee = L || Ve.find((U) => U.id === o) || Vm[0], tt = ya(Ee), Oe = L ? null : v[tt], rt = at.useRef(Oe);
+    let t = at.useRef(null), e = at.useRef(null), n = VR("scores"), i = VR("community"), [r, s] = at.useState("menu"), [o, l] = at.useState(() => vr("trackId", Vm[vr("track", 0)]?.id || "s1")), [c, u] = at.useState(() => ({ ghost: true, editor3d: false, fov: 70, stats: true, seen: 0, aiCount: 0, aiLevel: "medium", ...vr("settings", {}) })), [d, p] = at.useState(null), [f, h] = at.useState(null), [x, b] = at.useState(() => ({ ...Gm, ...vr("car", null) || { accent: vr("accent", Gm.accent) } })), [v, m] = at.useState(() => vr("bests", {})), [g, _] = at.useState(() => vr("custom", [])), [y, E] = at.useState(() => vr("profile", null)), [w, C] = at.useState(() => vr("sound", true)), [S, T] = at.useState(false), [I, P] = at.useState({ cp: 0, state: "ready", result: null, place: null }), [N, B] = at.useState(null), [H, V] = at.useState(null), [k, F] = at.useState(null), [L, W] = at.useState(null), [Y, ee] = at.useState(null), [re, _e] = at.useState(null), [tutorial, setTutorial] = at.useState(() => vr("tutorial", null)), [testPlace, setTestPlace] = at.useState(false), He = at.useRef(vr("ghosts", {})), ze = at.useRef(null), ie = at.useRef(null), pe = at.useMemo(() => i.items.filter((U) => Array.isArray(U.flat) && U.flat.length >= 12 && Hn[U.season] && (String(U.status || "").toLowerCase() === "approved" || !U.status)).map((U) => ({ id: "c-" + U.id, docId: U.id, title: String(U.name || "Untitled").slice(0, 28), name: `by ${U.author || "someone"}`, season: U.season, pts: Nm(U.flat), cpCount: U.cpCount || 3, community: true, authorKey: U.authorKey, createdAt: U.at || U.decidedAt || U.createdAt || Date.now(), ...Jv(U.objects) })), [i.items]), ue = at.useMemo(() => g.map(u_), [g]), ve = at.useMemo(() => [...Object.entries(Hn).map(([U, oe]) => ({ id: U, label: oe.label, icon: oe.icon, tracks: Vm.filter((z) => z.season === U) })), { id: "mine", label: "My tracks", icon: "✎", tracks: ue }, { id: "community", label: "Community", icon: "★", tracks: pe.filter((U) => !g.some((oe) => oe.id === U.docId)) }], [ue, pe, g]), Ve = at.useMemo(() => ve.flatMap((U) => U.tracks), [ve]), Ee = L || Ve.find((U) => U.id === o) || Vm[0], tt = ya(Ee), Oe = L ? null : v[tt], rt = at.useRef(Oe);
     rt.current = Oe, at.useEffect(() => {
       let U = new TB(t.current, { onFrame: a((oe, z) => {
         ze.current && (ze.current.textContent = Ts(oe)), ie.current && (ie.current.textContent = Math.round(z));
@@ -30250,7 +30361,7 @@ void main() {
       }, "onReset"), onCheckpoint: a((oe, z) => {
         let fe = rt.current, se = fe?.splits?.[oe] != null ? z - fe.splits[oe] : null;
         P((Se) => ({ ...Se, cp: oe + 1 })), B({ i: oe, t: z, d: se, key: Math.random() });
-      }, "onCheckpoint"), onFinish: a((oe) => P((z) => ({ ...z, cp: z.cp + 1, state: "finished", result: oe })), "onFinish"), onAir: a((oe) => V({ t: oe, key: Math.random() }), "onAir"), onOffTrack: a((oe) => h(oe), "onOffTrack") });
+      }, "onCheckpoint"), onPlace: a((place, field) => P((z) => ({ ...z, place })), "onPlace"), onFinish: a((oe) => P((z) => ({ ...z, cp: z.cp + 1, state: "finished", result: oe })), "onFinish"), onAir: a((oe) => V({ t: oe, key: Math.random() }), "onAir"), onOffTrack: a((oe) => h(oe), "onOffTrack") });
       return e.current = U, U.setCar(x), U.audio.setEnabled(w), () => U.dispose();
     }, []), at.useEffect(() => {
       let U = e.current;
@@ -30297,8 +30408,9 @@ void main() {
       }
       Zt(Ee, U.time);
     }, [I.result?.time]);
+    let practiceTrack = { id: "practice", name: "Practice Lane", title: "Straight Line School", season: "summer", pts: [[0,0,0],[0,0,-120],[0,0,-260],[0,0,-420],[0,0,-580],[0,0,-740]], cpCount: 4, ai: { count: Math.max(0, Math.min(7, c.aiCount || 0)), level: c.aiLevel || "medium" } };
     let Pt = a((U) => {
-      W(null), l(U.id), s("race");
+      W(U.ai ? { ...U, testing: true } : null), l(U.id), s("race");
     }, "race"), vt = a(() => {
       let U = e.current;
       U.setBest(Oe ? { ...Oe, ghost: He.current[tt] } : null), U.restart();
@@ -30339,7 +30451,7 @@ void main() {
     }, "touch2"), ce = Ee.cpCount || 3, le = d_(n.items, tt), be = y ? le.findIndex((U) => U.player === y.key) : -1;
     return (0, A.jsxs)("main", { className: "relative h-screen w-full overflow-hidden bg-[#0b1238] text-white select-none", style: { fontFamily: "'Chakra Petch', system-ui, sans-serif" }, children: [(0, A.jsx)("link", { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,500;0,600;0,700;1,600;1,700&display=swap" }), (0, A.jsx)("style", { children: ZB }), (0, A.jsx)("div", { className: "absolute inset-0", children: (0, A.jsx)("canvas", { ref: t, className: "block h-full w-full" }) }), r === "menu" && (0, A.jsxs)("div", { className: "absolute inset-0 flex flex-col items-center justify-center bg-[#0b1238]/35 backdrop-blur-[2px]", children: [(0, A.jsxs)("div", { className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] relative", children: [(0, A.jsx)("h1", { className: "italic font-bold leading-none tracking-[-0.02em] text-[#b9c5ff] text-[clamp(64px,13vw,190px)] [text-shadow:0_6px_0_#0d1440,0_0_40px_rgba(61,123,255,.45)]", children: "PolyRush" }), ] }), (0, A.jsx)("div", { className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] mt-14 flex flex-wrap justify-center gap-3 px-4", style: { animationDelay: ".1s" }, children: [["Garage", Ht, (0, A.jsx)(EB, {}, "c")], ["Editor", () => O(k || r2()), (0, A.jsx)(RB, {}, "e")], ["Leaderboard", () => {
       ee(tt), s("board");
-    }, (0, A.jsx)(IB, {}, "t")], ["Controls", () => T(true), (0, A.jsx)(CB, {}, "k")], ["Settings", () => s("settings"), (0, A.jsx)(PRCog, {}, "s")], ["Play", () => s("tracks"), (0, A.jsx)(AB, {}, "p")]].map(([U, oe, z]) => (0, A.jsx)($e, { onClick: oe, className: `h-[132px] w-[132px] sm:h-[156px] sm:w-[156px] ${U === "Play" ? "!bg-[#2443c9] hover:!bg-[#2f55ef]" : ""}`, children: (0, A.jsxs)("div", { className: "flex h-full flex-col items-center justify-center gap-4", children: [(0, A.jsx)("div", { className: "h-12 w-12 text-white", children: z }), (0, A.jsx)("span", { className: "text-[17px] font-bold italic tracking-wide", children: U })] }) }, U)) }), (0, A.jsxs)("p", { className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] mt-10 text-[15px] italic text-[#c7d1ff]", style: { animationDelay: ".2s" }, children: ["Now showing: ", Ee.name, " ", "·", " ", Ee.title] }), (0, A.jsxs)("div", { className: "absolute bottom-0 left-0 right-0 flex justify-between p-3", children: [(0, A.jsxs)($e, { onClick: () => C((U) => !U), className: "px-4 py-2 text-[14px] italic font-semibold", children: ["Sound: ", w ? "On" : "Off"] }), (0, A.jsxs)($e, { onClick: () => s("settings"), className: "px-4 py-2 text-[14px] italic font-semibold", children: ["Settings · v", Kv] }), (0, A.jsxs)("span", { className: "self-center pr-2 text-[14px] italic text-[#c7d1ff]", children: ["Inspired by PolyTrack ", "·", " Built in ClickUp"] })] })] }), r === "settings" && (0, A.jsx)(LR, { settings: c, setSettings: nt, profile: y, setProfile: E, sound: w, setSound: C, admin: qe, pending: M, onReview: () => s("review"), onBack: () => s("menu") }), r === "tracks" && (0, A.jsx)(PRTracks, { groups: ve, bests: v, customs: g, onBack: () => s("menu"), onBoard: () => { ee(tt), s("board"); }, onRace: Pt, onEdit: O, onNew: () => O(r2()), onImport: (U) => { O({ ...U, id: null }); }, toast: (U) => _e(U) }),
+    }, (0, A.jsx)(IB, {}, "t")], ["Controls", () => T(true), (0, A.jsx)(CB, {}, "k")], ["Settings", () => s("settings"), (0, A.jsx)(PRCog, {}, "s")], ["Play", () => s("tracks"), (0, A.jsx)(AB, {}, "p")]].map(([U, oe, z]) => (0, A.jsx)($e, { onClick: oe, className: `h-[132px] w-[132px] sm:h-[156px] sm:w-[156px] ${U === "Play" ? "!bg-[#2443c9] hover:!bg-[#2f55ef]" : ""}`, children: (0, A.jsxs)("div", { className: "flex h-full flex-col items-center justify-center gap-4", children: [(0, A.jsx)("div", { className: "h-12 w-12 text-white", children: z }), (0, A.jsx)("span", { className: "text-[17px] font-bold italic tracking-wide", children: U })] }) }, U)) }), (0, A.jsxs)("p", { className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] mt-10 text-[15px] italic text-[#c7d1ff]", style: { animationDelay: ".2s" }, children: ["Now showing: ", Ee.name, " ", "·", " ", Ee.title] }), (0, A.jsxs)("div", { className: "absolute bottom-0 left-0 right-0 flex justify-between p-3", children: [(0, A.jsxs)($e, { onClick: () => C((U) => !U), className: "px-4 py-2 text-[14px] italic font-semibold", children: ["Sound: ", w ? "On" : "Off"] }), (0, A.jsxs)("span", { className: "self-center pr-2 text-[14px] italic text-[#c7d1ff]", children: ["Inspired by PolyTrack ", "·", " Built in ClickUp"] })] })] }), r === "settings" && (0, A.jsx)(LR, { settings: c, setSettings: nt, profile: y, setProfile: E, sound: w, setSound: C, admin: qe, pending: M, onReview: () => s("review"), onPractice: () => Pt(practiceTrack), onBack: () => s("menu") }), r === "tracks" && (0, A.jsx)(PRTracks, { groups: ve, bests: v, customs: g, onBack: () => s("menu"), onBoard: () => { ee(tt), s("board"); }, onRace: Pt, onEdit: O, onNew: () => O(r2()), onImport: (U) => { O({ ...U, id: null }); }, toast: (U) => _e(U) }),
 r === "garage" && d && (0, A.jsx)(LB, { cfg: d, setCfg: p, onBack: () => s("menu"), onRace: () => s("tracks"), setFocus: (U) => {
       e.current && (e.current.garageFocus = U);
     }, onSave: Xt, admin: qe, showStats: !!c.stats, onYaw: (U) => {
@@ -30347,7 +30459,7 @@ r === "garage" && d && (0, A.jsx)(LB, { cfg: d, setCfg: p, onBack: () => s("menu
     } }), r === "cutscene" && (0, A.jsxs)("div", { className: "pointer-events-none absolute inset-0", children: [(0, A.jsx)("div", { className: "absolute inset-x-0 bottom-[16%] text-center", style: { animation: "rise .5s cubic-bezier(.2,.8,.2,1) both" }, children: (0, A.jsx)("div", { className: "inline-block -skew-x-[8deg] bg-[#0f1847]/90 px-7 py-3", children: (0, A.jsx)("div", { className: "skew-x-[8deg] text-[30px] font-bold italic", children: "Garage door open · roll out" }) }) }), (0, A.jsx)("div", { className: "absolute inset-0 bg-[#0b1238]", style: { animation: "fadeout 3.6s ease-in forwards" } })] }), r === "board" && (0, A.jsx)(XB, { groups: ve, scores: n.items, profile: y, setProfile: E, onBack: () => s("menu"), onRace: Pt, initialKey: Y }), r === "review" && qe && (0, A.jsx)(FR, { items: D, onDecide: K, onTest: (U) => {
       let oe = { id: "rv-" + U.id, name: U.name || "Untitled", season: U.season, cpCount: U.cpCount || 3, pts: Nm(U.flat), ...Jv(U.objects) };
       W({ ...u_(oe), testing: true, reviewing: true }), s("race");
-    }, onBack: () => s("menu") }), r === "menu" && (0, A.jsxs)(A.Fragment, { children: [(0, A.jsx)(OR, { notes: q, seen: c.seen, onOpen: () => nt({ seen: Date.now() }) }), qe && (0, A.jsx)($e, { onClick: () => setTestPlace(true), className: "absolute right-[4.8rem] top-3 z-10 h-12 px-3 text-[13px] font-bold italic !bg-[#ffc928] !text-[#0b1238]", children: "TEST" })] }), r === "editor" && k && (0, A.jsx)(zB, { draft: k, setDraft: F, onExit: () => s("tracks"), onSave: j, onTest: te, onDelete: () => Z(k), isSaved: !!k.id && g.some((U) => U.id === k.id), published: i.items.find((U) => U.id === k.id)?.status || (i.items.some((U) => U.id === k.id) ? "approved" : null), enable3d: c.editor3d, canPublish: !!y, onPublish: () => ae(g.find((U) => U.id === k.id) || k) }), r === "race" && (0, A.jsxs)(Gn.Fragment, { children: [(0, A.jsxs)("div", { className: "absolute left-2 top-2 flex flex-col gap-1.5", children: [(0, A.jsxs)("div", { className: "flex gap-1.5", children: [(0, A.jsx)($e, { onClick: Jt, className: "px-4 py-2 text-[17px] font-bold italic", children: L ? "← Editor" : "Exit" }), (0, A.jsxs)($e, { onClick: vt, className: "px-4 py-2 text-[17px] font-bold italic", children: ["Restart ", (0, A.jsx)(e2, { children: "R" })] }), !L && (0, A.jsxs)($e, { onClick: $, className: "px-4 py-2 text-[17px] font-bold italic", children: ["Next Track ", "▶"] })] }), (0, A.jsxs)($e, { as: "div", className: "w-fit px-4 py-1.5", children: [(0, A.jsxs)("div", { className: "text-[17px] font-bold italic", children: [Ee.title, " ", (0, A.jsxs)("span", { className: "font-semibold text-[#c7d1ff]", children: ["·", " ", L ? "Test drive" : Ee.name] })] }), (0, A.jsxs)("div", { className: "text-[14px] italic tabular-nums text-[#c7d1ff]", children: [Oe ? `Record ${Ts(Oe.time)}${He.current[tt] ? " · ghost on" : ""}` : L ? "Times aren't saved in test drives" : "No record", le.length > 0 && !L ? ` · Board best ${Ts(le[0].time)}` : ""] })] })] }), I.state === "ready" && !I.result && (0, A.jsxs)("div", { className: "pointer-events-none absolute inset-x-0 top-[30%] text-center", children: [(0, A.jsx)("div", { className: "text-[34px] font-bold italic [text-shadow:0_3px_0_#0d1440]", style: { animation: "pulse 1.4s ease-in-out infinite" }, children: de ? "Hold GAS to go" : "Hold ↑ or W to go" }), (0, A.jsxs)("div", { className: "mt-2 text-[16px] font-semibold italic text-white [text-shadow:0_2px_0_#0d1440,0_0_8px_#0d1440]", children: ["Space to drift ", "·", " Enter to respawn at checkpoint"] })] }), N && (0, A.jsx)("div", { className: "pointer-events-none absolute inset-x-0 top-[22%] text-center", style: { animation: "pop 2.2s ease-out forwards" }, children: (0, A.jsx)("div", { className: "inline-block -skew-x-[8deg] bg-[#0f1847]/90 px-6 py-2", children: (0, A.jsxs)("div", { className: "flex skew-x-[8deg] items-baseline gap-4", children: [(0, A.jsxs)("span", { className: "text-[16px] italic text-[#ffc928]", children: ["Checkpoint ", N.i + 1] }), (0, A.jsx)("span", { className: "text-[30px] font-bold italic tabular-nums", children: Ts(N.t) }), N.d != null && (0, A.jsx)("span", { className: `text-[22px] font-bold italic tabular-nums ${N.d <= 0 ? "text-[#5fa0ff]" : "text-[#ff5a5a]"}`, children: Ku(N.d) })] }) }) }, N.key), H && (0, A.jsx)("div", { className: "pointer-events-none absolute inset-x-0 top-[38%] text-center", style: { animation: "pop 1.6s ease-out forwards" }, children: (0, A.jsxs)("span", { className: "text-[30px] font-bold italic text-[#ffc928] [text-shadow:0_3px_0_#0d1440]", children: ["AIR ", H.t.toFixed(2), "s"] }) }, H.key), f != null && I.state === "running" && (0, A.jsxs)("div", { className: "pointer-events-none absolute inset-x-0 top-[18%] text-center", children: [(0, A.jsx)("div", { className: "inline-block -skew-x-[8deg] bg-[#ff3b3b] px-6 py-2", children: (0, A.jsxs)("div", { className: "skew-x-[8deg] text-[26px] font-bold italic", children: ["Off track · respawn in ", f] }) }), (0, A.jsx)("div", { className: "mt-2 text-[16px] font-semibold italic [text-shadow:0_2px_0_#0d1440]", children: "Drive back over the wall or press Enter" })] }), (0, A.jsx)($e, { as: "div", className: "absolute bottom-2 left-2 px-4 py-2", children: (0, A.jsxs)("div", { className: "flex items-center gap-2 text-[26px] font-bold italic tabular-nums", children: [(0, A.jsx)("span", { className: "text-[#ffc928]", children: "⚑" }), Math.min(I.cp, ce), "/", ce] }) }), (0, A.jsxs)("div", { className: "absolute bottom-2 left-1/2 flex -translate-x-1/2 items-end gap-1.5", children: [(0, A.jsx)(l_, { label: "Record", w: "w-[170px] max-sm:hidden", children: (0, A.jsx)("span", { className: "text-white/85", children: Oe ? Ts(Oe.time) : "---" }) }), (0, A.jsx)(l_, { label: "Current", big: true, children: (0, A.jsx)("span", { ref: ze, children: "00:00.000" }) }), (0, A.jsx)(l_, { label: "Difference", w: "w-[170px] max-sm:hidden", children: (0, A.jsx)("span", { className: N?.d == null ? "text-white/85" : N.d <= 0 ? "text-[#5fa0ff]" : "text-[#ff5a5a]", children: N?.d == null ? "---" : Ku(N.d) }) })] }), (0, A.jsx)($e, { as: "div", className: "absolute bottom-2 right-2 px-4 py-2", children: (0, A.jsxs)("div", { className: "flex items-baseline gap-1 text-[28px] font-bold italic tabular-nums", children: [(0, A.jsx)("span", { ref: ie, className: "inline-block min-w-[3ch] text-right", children: "0" }), (0, A.jsx)("span", { className: "text-[14px] text-[#b9c5ff]", children: "km/h" })] }) }), de && I.state !== "finished" && (0, A.jsxs)("div", { className: "absolute inset-x-0 bottom-24 flex justify-between px-4", children: [(0, A.jsx)("div", { className: "flex gap-3", children: [["left", "◀"], ["right", "▶"]].map(([U, oe]) => (0, A.jsx)(Um, { on: me(U, true), off: me(U, false), children: oe }, U)) }), (0, A.jsxs)("div", { className: "flex gap-3", children: [(0, A.jsx)(Um, { on: me("drift", true), off: me("drift", false), small: true, children: "DRIFT" }), (0, A.jsx)(Um, { on: me("down", true), off: me("down", false), small: true, children: "BRAKE" }), (0, A.jsx)(Um, { on: me("up", true), off: me("up", false), accent: true, children: "GAS" })] })] }), I.result && (0, A.jsx)("div", { className: "absolute inset-0 flex items-center justify-center overflow-y-auto bg-[#0b1238]/40 py-6", children: (0, A.jsxs)("div", { className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] w-[480px] max-w-[92vw] bg-[#0f1847]/95 p-7 text-center", children: [(0, A.jsxs)("div", { className: "text-[16px] italic text-[#b9c5ff]", children: [Ee.title, " ", "·", " ", L ? "Test drive" : Ee.name] }), (0, A.jsx)("div", { className: "mt-2 text-[64px] font-bold italic leading-none tabular-nums", children: Ts(I.result.time) }), (0, A.jsx)("div", { className: "mt-3 h-8 text-[22px] font-bold italic", children: I.result.isRecord ? (0, A.jsx)("span", { className: "text-[#ffc928]", children: I.result.prev ? `New record! ${Ku(I.result.time - I.result.prev)}` : "First record set!" }) : Oe && (0, A.jsxs)("span", { className: "text-[#ff5a5a]", children: [Ku(I.result.time - Oe.time), " off your record"] }) }), (0, A.jsx)("div", { className: "mt-4 flex flex-wrap justify-center gap-2 text-[15px] italic tabular-nums text-[#b9c5ff]", children: I.result.splits.map((U, oe) => (0, A.jsxs)("span", { className: "bg-[#16215c] px-3 py-1", children: [(0, A.jsxs)("span", { className: "text-[#ffc928]", children: ["CP", oe + 1] }), " ", Ts(U)] }, oe)) }), (0, A.jsx)("div", { className: "mt-6 border-t-2 border-[#16215c] pt-4 text-left", children: L ? (0, A.jsx)("p", { className: "text-[15px] italic text-[#c7d1ff]", children: "Test runs don't count. Save the track to open its leaderboard." }) : y ? (0, A.jsxs)(Gn.Fragment, { children: [(0, A.jsxs)("div", { className: "mb-2 flex items-baseline justify-between text-[14px] italic", children: [(0, A.jsx)("span", { className: "font-semibold uppercase tracking-[0.12em] text-[#c7d1ff]", children: "Leaderboard" }), be >= 0 && (0, A.jsxs)("span", { className: "text-[#ffc928]", children: ["You're #", be + 1, " of ", le.length] })] }), (0, A.jsx)(u2, { rows: le, me: y.key, limit: 5, dense: true })] }) : (0, A.jsxs)(Gn.Fragment, { children: [(0, A.jsx)("div", { className: "mb-3 text-[17px] font-bold italic", children: "Post this time to the leaderboard" }), (0, A.jsx)(km, { compact: true, profile: y, onVerified: (U) => {
+    }, onBack: () => s("menu") }), r === "menu" && (0, A.jsxs)(A.Fragment, { children: [(0, A.jsx)(OR, { notes: q, seen: c.seen, onOpen: () => nt({ seen: Date.now() }) }), qe && (0, A.jsx)($e, { onClick: () => setTestPlace(true), className: "absolute right-[4.8rem] top-3 z-10 h-12 px-3 text-[13px] font-bold italic !bg-[#ffc928] !text-[#0b1238]", children: "TEST" })] }), r === "editor" && k && (0, A.jsx)(zB, { draft: k, setDraft: F, onExit: () => s("tracks"), onSave: j, onTest: te, onDelete: () => Z(k), isSaved: !!k.id && g.some((U) => U.id === k.id), published: i.items.find((U) => U.id === k.id)?.status || (i.items.some((U) => U.id === k.id) ? "approved" : null), enable3d: c.editor3d, canPublish: !!y, onPublish: () => ae(g.find((U) => U.id === k.id) || k) }), r === "race" && (0, A.jsxs)(Gn.Fragment, { children: [(0, A.jsxs)("div", { className: "absolute left-2 top-2 flex flex-col gap-1.5", children: [(0, A.jsxs)("div", { className: "flex gap-1.5", children: [(0, A.jsx)($e, { onClick: Jt, className: "px-4 py-2 text-[17px] font-bold italic", children: L ? "← Editor" : "Exit" }), (0, A.jsxs)($e, { onClick: vt, className: "px-4 py-2 text-[17px] font-bold italic", children: ["Restart ", (0, A.jsx)(e2, { children: "R" })] }), !L && (0, A.jsxs)($e, { onClick: $, className: "px-4 py-2 text-[17px] font-bold italic", children: ["Next Track ", "▶"] })] }), (0, A.jsxs)($e, { as: "div", className: "w-fit px-4 py-1.5", children: [(0, A.jsxs)("div", { className: "text-[17px] font-bold italic", children: [Ee.title, " ", (0, A.jsxs)("span", { className: "font-semibold text-[#c7d1ff]", children: ["·", " ", L ? "Test drive" : Ee.name] }), Ee.ai?.count ? (0, A.jsx)("span", { className: "ml-2 text-[#ffc928]", children: `· ${I.place || 1}/${Ee.ai.count + 1}` }) : null] }), (0, A.jsxs)("div", { className: "text-[14px] italic tabular-nums text-[#c7d1ff]", children: [Oe ? `Record ${Ts(Oe.time)}${He.current[tt] ? " · ghost on" : ""}` : L ? "Times aren't saved in test drives" : "No record", le.length > 0 && !L ? ` · Board best ${Ts(le[0].time)}` : ""] })] })] }), I.state === "ready" && !I.result && (0, A.jsxs)("div", { className: "pointer-events-none absolute inset-x-0 top-[30%] text-center", children: [(0, A.jsx)("div", { className: "text-[34px] font-bold italic [text-shadow:0_3px_0_#0d1440]", style: { animation: "pulse 1.4s ease-in-out infinite" }, children: de ? "Hold GAS to go" : "Hold ↑ or W to go" }), (0, A.jsxs)("div", { className: "mt-2 text-[16px] font-semibold italic text-white [text-shadow:0_2px_0_#0d1440,0_0_8px_#0d1440]", children: ["Space to drift ", "·", " Enter to respawn at checkpoint"] })] }), N && (0, A.jsx)("div", { className: "pointer-events-none absolute inset-x-0 top-[22%] text-center", style: { animation: "pop 2.2s ease-out forwards" }, children: (0, A.jsx)("div", { className: "inline-block -skew-x-[8deg] bg-[#0f1847]/90 px-6 py-2", children: (0, A.jsxs)("div", { className: "flex skew-x-[8deg] items-baseline gap-4", children: [(0, A.jsxs)("span", { className: "text-[16px] italic text-[#ffc928]", children: ["Checkpoint ", N.i + 1] }), (0, A.jsx)("span", { className: "text-[30px] font-bold italic tabular-nums", children: Ts(N.t) }), N.d != null && (0, A.jsx)("span", { className: `text-[22px] font-bold italic tabular-nums ${N.d <= 0 ? "text-[#5fa0ff]" : "text-[#ff5a5a]"}`, children: Ku(N.d) })] }) }) }, N.key), H && (0, A.jsx)("div", { className: "pointer-events-none absolute inset-x-0 top-[38%] text-center", style: { animation: "pop 1.6s ease-out forwards" }, children: (0, A.jsxs)("span", { className: "text-[30px] font-bold italic text-[#ffc928] [text-shadow:0_3px_0_#0d1440]", children: ["AIR ", H.t.toFixed(2), "s"] }) }, H.key), f != null && I.state === "running" && (0, A.jsxs)("div", { className: "pointer-events-none absolute inset-x-0 top-[18%] text-center", children: [(0, A.jsx)("div", { className: "inline-block -skew-x-[8deg] bg-[#ff3b3b] px-6 py-2", children: (0, A.jsxs)("div", { className: "skew-x-[8deg] text-[26px] font-bold italic", children: ["Off track · respawn in ", f] }) }), (0, A.jsx)("div", { className: "mt-2 text-[16px] font-semibold italic [text-shadow:0_2px_0_#0d1440]", children: "Drive back over the wall or press Enter" })] }), (0, A.jsx)($e, { as: "div", className: "absolute bottom-2 left-2 px-4 py-2", children: (0, A.jsxs)("div", { className: "flex items-center gap-2 text-[26px] font-bold italic tabular-nums", children: [(0, A.jsx)("span", { className: "text-[#ffc928]", children: "⚑" }), Math.min(I.cp, ce), "/", ce] }) }), (0, A.jsxs)("div", { className: "absolute bottom-2 left-1/2 flex -translate-x-1/2 items-end gap-1.5", children: [(0, A.jsx)(l_, { label: "Record", w: "w-[170px] max-sm:hidden", children: (0, A.jsx)("span", { className: "text-white/85", children: Oe ? Ts(Oe.time) : "---" }) }), (0, A.jsx)(l_, { label: "Current", big: true, children: (0, A.jsx)("span", { ref: ze, children: "00:00.000" }) }), (0, A.jsx)(l_, { label: "Difference", w: "w-[170px] max-sm:hidden", children: (0, A.jsx)("span", { className: N?.d == null ? "text-white/85" : N.d <= 0 ? "text-[#5fa0ff]" : "text-[#ff5a5a]", children: N?.d == null ? "---" : Ku(N.d) }) })] }), (0, A.jsx)($e, { as: "div", className: "absolute bottom-2 right-2 px-4 py-2", children: (0, A.jsxs)("div", { className: "flex items-baseline gap-1 text-[28px] font-bold italic tabular-nums", children: [(0, A.jsx)("span", { ref: ie, className: "inline-block min-w-[3ch] text-right", children: "0" }), (0, A.jsx)("span", { className: "text-[14px] text-[#b9c5ff]", children: "km/h" })] }) }), de && I.state !== "finished" && (0, A.jsxs)("div", { className: "absolute inset-x-0 bottom-24 flex justify-between px-4", children: [(0, A.jsx)("div", { className: "flex gap-3", children: [["left", "◀"], ["right", "▶"]].map(([U, oe]) => (0, A.jsx)(Um, { on: me(U, true), off: me(U, false), children: oe }, U)) }), (0, A.jsxs)("div", { className: "flex gap-3", children: [(0, A.jsx)(Um, { on: me("drift", true), off: me("drift", false), small: true, children: "DRIFT" }), (0, A.jsx)(Um, { on: me("down", true), off: me("down", false), small: true, children: "BRAKE" }), (0, A.jsx)(Um, { on: me("up", true), off: me("up", false), accent: true, children: "GAS" })] })] }), I.result && (0, A.jsx)("div", { className: "absolute inset-0 flex items-center justify-center overflow-y-auto bg-[#0b1238]/40 py-6", children: (0, A.jsxs)("div", { className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] w-[480px] max-w-[92vw] bg-[#0f1847]/95 p-7 text-center", children: [(0, A.jsxs)("div", { className: "text-[16px] italic text-[#b9c5ff]", children: [Ee.title, " ", "·", " ", L ? "Test drive" : Ee.name] }), (0, A.jsx)("div", { className: "mt-2 text-[64px] font-bold italic leading-none tabular-nums", children: Ts(I.result.time) }), (0, A.jsx)("div", { className: "mt-3 h-8 text-[22px] font-bold italic", children: I.result.place ? (0, A.jsx)("span", { className: "text-[#ffc928]", children: `Finished ${I.result.place}${I.result.place === 1 ? "st" : I.result.place === 2 ? "nd" : I.result.place === 3 ? "rd" : "th"} of ${I.result.field}` }) : I.result.isRecord ? (0, A.jsx)("span", { className: "text-[#ffc928]", children: I.result.prev ? `New record! ${Ku(I.result.time - I.result.prev)}` : "First record set!" }) : Oe && (0, A.jsxs)("span", { className: "text-[#ff5a5a]", children: [Ku(I.result.time - Oe.time), " off your record"] }) }), (0, A.jsx)("div", { className: "mt-4 flex flex-wrap justify-center gap-2 text-[15px] italic tabular-nums text-[#b9c5ff]", children: I.result.splits.map((U, oe) => (0, A.jsxs)("span", { className: "bg-[#16215c] px-3 py-1", children: [(0, A.jsxs)("span", { className: "text-[#ffc928]", children: ["CP", oe + 1] }), " ", Ts(U)] }, oe)) }), (0, A.jsx)("div", { className: "mt-6 border-t-2 border-[#16215c] pt-4 text-left", children: L ? (0, A.jsx)("p", { className: "text-[15px] italic text-[#c7d1ff]", children: "Test runs don't count. Save the track to open its leaderboard." }) : y ? (0, A.jsxs)(Gn.Fragment, { children: [(0, A.jsxs)("div", { className: "mb-2 flex items-baseline justify-between text-[14px] italic", children: [(0, A.jsx)("span", { className: "font-semibold uppercase tracking-[0.12em] text-[#c7d1ff]", children: "Leaderboard" }), be >= 0 && (0, A.jsxs)("span", { className: "text-[#ffc928]", children: ["You're #", be + 1, " of ", le.length] })] }), (0, A.jsx)(u2, { rows: le, me: y.key, limit: 5, dense: true })] }) : (0, A.jsxs)(Gn.Fragment, { children: [(0, A.jsx)("div", { className: "mb-3 text-[17px] font-bold italic", children: "Post this time to the leaderboard" }), (0, A.jsx)(km, { compact: true, profile: y, onVerified: (U) => {
       E(U), Zt(Ee, I.result.time, U);
     } })] }) }), (0, A.jsxs)("div", { className: "mt-6 grid grid-cols-3 gap-2", children: [(0, A.jsx)($e, { onClick: Jt, className: "py-3 text-[17px] font-bold italic", children: L ? "Editor" : "Tracks" }), (0, A.jsxs)($e, { onClick: vt, className: "py-3 text-[17px] font-bold italic", children: ["Retry ", (0, A.jsx)(e2, { children: "R" })] }), L ? (0, A.jsx)($e, { onClick: () => {
       W(null), s("editor");
@@ -30446,7 +30558,7 @@ function PRSnap({ cfg, view, height = 92 }) {
 function PRStats({ stats }) {
   return /* @__PURE__ */ PRh("div", { style: { display: "grid", gap: 5 } }, Object.entries(stats).map(([k, v]) => /* @__PURE__ */ PRh("div", { key: k, style: { display: "grid", gridTemplateColumns: "6.6rem 1fr 1.4rem", alignItems: "center", gap: 8 } }, /* @__PURE__ */ PRh("span", { className: "text-[13px] italic text-[#c7d1ff]" }, k), /* @__PURE__ */ PRh("span", { style: { display: "flex", gap: 2 } }, Array.from({ length: 10 }, (_, i) => /* @__PURE__ */ PRh("span", { key: i, style: { height: 8, flex: 1, transform: "skewX(-12deg)", background: i < v ? v <= 3 ? "#ff6a5a" : v >= 8 ? "#2fd3a0" : "#ffc928" : "#0b1238" } }))), /* @__PURE__ */ PRh("span", { className: "text-[13px] font-bold italic tabular-nums", style: { textAlign: "right" } }, v))));
 }
-function LR({ settings: t, setSettings: e, profile: n, setProfile: i, sound: r, setSound: s, admin: o, pending: l, onReview: c, onBack: u }) {
+function LR({ settings: t, setSettings: e, profile: n, setProfile: i, sound: r, setSound: s, admin: o, pending: l, onReview: c, onPractice: practice, onBack: u }) {
   let [d, p] = pt.useState(!n), [f, h] = pt.useState(n?.name || ""), [er, setEr] = pt.useState(null), [code, setCode] = pt.useState(""), [codeErr, setCodeErr] = pt.useState(null);
   pt.useEffect(() => h(n?.name || ""), [n?.name]);
   let x = NR(), fov = t.fov || 70;
@@ -30473,7 +30585,7 @@ function LR({ settings: t, setSettings: e, profile: n, setProfile: i, sound: r, 
     i(b), p(false);
   }, compact: true })), /* @__PURE__ */ PRh("p", { className: "mt-2 text-[14px] text-[#c7d1ff]" }, n ? "A new email starts a new leaderboard identity. " : "", "Names and emails can only belong to one racer.")))), /* @__PURE__ */ PRh("div", null, /* @__PURE__ */ PRh(H2, null, "Admin"), o ? /* @__PURE__ */ PRh("div", { className: "mt-5 space-y-2" }, /* @__PURE__ */ PRh("div", { className: "flex items-center gap-3 text-[16px] italic" }, /* @__PURE__ */ PRh("span", { className: "-skew-x-[8deg] bg-[#ffc928] px-2 text-[14px] font-bold text-[#0b1238]" }, x?.name || "Admin"), " Admin tools unlocked on this device"), /* @__PURE__ */ PRh($e, { onClick: c, className: "w-full py-3 text-[18px] font-bold italic !bg-[#2443c9] hover:!bg-[#2f55ef]" }, "Review queue", l ? ` · ${l}` : ""), /* @__PURE__ */ PRh($e, { onClick: () => e({ adminUnlocked: false }), className: "w-full py-2.5 text-[15px] font-semibold italic hover:!bg-[#7a1f2a]" }, "Lock admin tools")) : /* @__PURE__ */ PRh("form", { className: "mt-5", onSubmit: unlock }, /* @__PURE__ */ PRh("qv", null, "Admin code"), /* @__PURE__ */ PRh("div", { className: "mt-1.5 flex gap-2" }, /* @__PURE__ */ PRh("input", { value: code, onChange: (b) => {
     setCode(b.target.value.replace(/[^0-9]/g, "").slice(0, 8)), setCodeErr(null);
-  }, inputMode: "numeric", type: "password", placeholder: "••••", className: Ms, "aria-label": "Admin code" }), /* @__PURE__ */ PRh($e, { as: "button", type: "submit", disabled: !code, className: "px-5 text-[16px] font-bold italic" }, "Unlock")), /* @__PURE__ */ PRh("p", { className: `mt-2 text-[14px] italic ${codeErr ? "font-semibold text-[#ffb3b0]" : "text-[#c7d1ff]"}` }, codeErr || "Unlocks track reviews and the jet engine.")))), /* @__PURE__ */ PRh("section", { className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] space-y-8", style: { animationDelay: ".06s" } }, /* @__PURE__ */ PRh("div", null, /* @__PURE__ */ PRh(H2, null, "Game"), /* @__PURE__ */ PRh("div", { className: "mt-5 space-y-2" }, /* @__PURE__ */ PRh("jv", { label: "Ghost car", hint: "Race against your best run", value: t.ghost, onChange: (b) => e({ ghost: b }) }), /* @__PURE__ */ PRh("jv", { label: "Sound", value: r, onChange: s }), /* @__PURE__ */ PRh("div", { className: "-skew-x-[8deg] bg-[#16215c] px-4 py-3" }, /* @__PURE__ */ PRh("div", { className: "skew-x-[8deg]" }, /* @__PURE__ */ PRh("div", { className: "flex items-baseline justify-between" }, /* @__PURE__ */ PRh("span", { className: "block text-[17px] font-bold italic" }, "Field of view"), /* @__PURE__ */ PRh("span", { className: "text-[17px] font-bold italic tabular-nums text-[#ffc928]" }, fov, "°")), /* @__PURE__ */ PRh("span", { className: "block text-[14px] text-[#c7d1ff]" }, "The camera stays locked behind the car · AI race settings are coming from the practice track"), /* @__PURE__ */ PRh("input", { type: "range", min: "55", max: "110", step: "1", value: fov, onChange: (b) => e({ fov: +b.target.value }), className: "pr-range mt-2", "aria-label": "Field of view" }))))), /* @__PURE__ */ PRh("div", null, /* @__PURE__ */ PRh(H2, null, "Garage"), /* @__PURE__ */ PRh("div", { className: "mt-5" }, /* @__PURE__ */ PRh("jv", { label: "Show car stats", hint: "Speed, grip, off-road and stability bars for each car type", value: !!t.stats, onChange: (b) => e({ stats: b }) }))), /* @__PURE__ */ PRh("div", null, /* @__PURE__ */ PRh(H2, null, "Editor"), /* @__PURE__ */ PRh("div", { className: "mt-5" }, /* @__PURE__ */ PRh("jv", { label: "3D editing", hint: "Explorer, terrain and poly blocks", value: t.editor3d, onChange: (b) => e({ editor3d: b }) })))))));
+  }, inputMode: "numeric", type: "password", placeholder: "••••", className: Ms, "aria-label": "Admin code" }), /* @__PURE__ */ PRh($e, { as: "button", type: "submit", disabled: !code, className: "px-5 text-[16px] font-bold italic" }, "Unlock")), /* @__PURE__ */ PRh("p", { className: `mt-2 text-[14px] italic ${codeErr ? "font-semibold text-[#ffb3b0]" : "text-[#c7d1ff]"}` }, codeErr || "Unlocks track reviews and the jet engine.")))), /* @__PURE__ */ PRh("section", { className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] space-y-8", style: { animationDelay: ".06s" } }, /* @__PURE__ */ PRh("div", null, /* @__PURE__ */ PRh(H2, null, "Game"), /* @__PURE__ */ PRh("div", { className: "mt-5 space-y-2" }, /* @__PURE__ */ PRh("jv", { label: "Ghost car", hint: "Race against your best run", value: t.ghost, onChange: (b) => e({ ghost: b }) }), /* @__PURE__ */ PRh("jv", { label: "Sound", value: r, onChange: s }), /* @__PURE__ */ PRh("div", { className: "-skew-x-[8deg] bg-[#16215c] px-4 py-3" }, /* @__PURE__ */ PRh("div", { className: "skew-x-[8deg]" }, /* @__PURE__ */ PRh("div", { className: "flex items-baseline justify-between" }, /* @__PURE__ */ PRh("span", { className: "block text-[17px] font-bold italic" }, "Field of view"), /* @__PURE__ */ PRh("span", { className: "text-[17px] font-bold italic tabular-nums text-[#ffc928]" }, fov, "°")), /* @__PURE__ */ PRh("span", { className: "block text-[14px] text-[#c7d1ff]" }, "The camera stays locked behind the car · practice racing uses the straight-line school"), /* @__PURE__ */ PRh("input", { type: "range", min: "55", max: "110", step: "1", value: fov, onChange: (b) => e({ fov: +b.target.value }), className: "pr-range mt-2", "aria-label": "Field of view" }))))), /* @__PURE__ */ PRh("div", null, /* @__PURE__ */ PRh(H2, null, "Garage"), /* @__PURE__ */ PRh("div", { className: "mt-5" }, /* @__PURE__ */ PRh("jv", { label: "Show car stats", hint: "Speed, grip, off-road and stability bars for each car type", value: !!t.stats, onChange: (b) => e({ stats: b }) }))), /* @__PURE__ */ PRh("div", null, /* @__PURE__ */ PRh(H2, null, "Editor"), /* @__PURE__ */ PRh("div", { className: "mt-5" }, /* @__PURE__ */ PRh("jv", { label: "3D editing", hint: "Explorer, terrain and poly blocks", value: t.editor3d, onChange: (b) => e({ editor3d: b }) })))))));
 }
 a(LR, "SettingsScreen");
 var PRexMeta = { standard: "Two pipes, balanced", track: "+3% top speed", quad: "Four little pops", side: "Loud and low", stack: "Straight up", jet: "Admin only" };
@@ -30531,7 +30643,7 @@ function PRparseTrack(txt) {
   return { track: { name: String(j.name || "Imported track").slice(0, 28), season: Hn[j.season] ? j.season : "summer", cpCount: Math.max(1, Math.min(5, j.cpCount | 0 || 3)), pts: pts.map((q) => q.map((n) => +n)), terrain: clean(j.terrain), blocks: clean(j.blocks) } };
 }
 function PRTracks({ groups, bests, customs, onBack, onBoard, onRace, onEdit, onNew, onImport, toast }) {
-  let [tab, setTab] = pt.useState(() => vr("tracksTab", "official")), [q, setQ] = pt.useState(""), [imp, setImp] = pt.useState(false), [txt, setTxt] = pt.useState(""), [ierr, setIerr] = pt.useState(null);
+  let [tab, setTab] = pt.useState(() => vr("tracksTab", "official")), [q, setQ] = pt.useState(""), [imp, setImp] = pt.useState(false), [txt, setTxt] = pt.useState(""), [ierr, setIerr] = pt.useState(null), [selected, setSelected] = pt.useState(null);
   pt.useEffect(() => $r("tracksTab", tab), [tab]);
   let ql = q.trim().toLowerCase(), match = (tr) => !ql || [tr.title, tr.name, Hn[tr.season]?.label].some((z) => String(z || "").toLowerCase().includes(ql));
   let official = groups.filter((g) => Hn[g.id]), community = groups.find((g) => g.id === "community")?.tracks || [], mine = groups.find((g) => g.id === "mine")?.tracks || [];
@@ -30558,7 +30670,7 @@ function PRTracks({ groups, bests, customs, onBack, onBoard, onRace, onEdit, onN
       setTxt(code), setImp(true), toast("Copy the code from the box");
     });
   };
-  let cards = (list, kind) => list.filter(match).map((oe, z) => /* @__PURE__ */ PRh("jB", { key: oe.id, def: oe, record: bests[ya(oe)], onClick: () => onRace(oe), delay: z * 0.03 }, kind === "custom" && /* @__PURE__ */ PRh(PRf, null, /* @__PURE__ */ PRh("s2", { onClick: () => onEdit(customs.find((fe) => fe.id === oe.id)) }, "Edit"), /* @__PURE__ */ PRh("s2", { onClick: () => share(oe) }, "Share")), kind === "community" && /* @__PURE__ */ PRh("s2", { onClick: () => onEdit({ id: null, name: `${oe.title} remix`.slice(0, 28), season: oe.season, cpCount: oe.cpCount, pts: oe.pts.map((fe) => [...fe]), terrain: (oe.terrain || []).map((fe) => ({ ...fe })), blocks: (oe.blocks || []).map((fe) => ({ ...fe })) }) }, "Remix")));
+  let cards = (list, kind) => list.filter(match).map((oe, z) => /* @__PURE__ */ PRh("jB", { key: oe.id, def: oe, record: bests[ya(oe)], onClick: () => setSelected(oe), delay: z * 0.03 }, kind === "custom" && /* @__PURE__ */ PRh(PRf, null, /* @__PURE__ */ PRh("s2", { onClick: () => onEdit(customs.find((fe) => fe.id === oe.id)) }, "Edit"), /* @__PURE__ */ PRh("s2", { onClick: () => share(oe) }, "Share")), kind === "community" && /* @__PURE__ */ PRh("s2", { onClick: () => onEdit({ id: null, name: `${oe.title} remix`.slice(0, 28), season: oe.season, cpCount: oe.cpCount, pts: oe.pts.map((fe) => [...fe]), terrain: (oe.terrain || []).map((fe) => ({ ...fe })), blocks: (oe.blocks || []).map((fe) => ({ ...fe })) }) }, "Remix")));
   let empty = (msg) => /* @__PURE__ */ PRh("p", { className: "mt-10 text-center text-[17px] italic text-[#c7d1ff]" }, msg);
   let body;
   if (tab === "official") {
@@ -30570,6 +30682,11 @@ function PRTracks({ groups, bests, customs, onBack, onBoard, onRace, onEdit, onN
   } else {
     let c = cards(mine, "custom");
     body = /* @__PURE__ */ PRh("div", { className: "mt-8 flex flex-wrap gap-4" }, c, !ql && /* @__PURE__ */ PRh("button", { onClick: onNew, className: "animate-[rise_.45s_cubic-bezier(.2,.8,.2,1)_both] grid h-[260px] w-[176px] cursor-pointer place-items-center border-[3px] border-dashed border-[#b9c5ff]/35 text-center italic text-[#b9c5ff] transition-colors hover:border-[#b9c5ff] hover:text-white" }, /* @__PURE__ */ PRh("span", null, /* @__PURE__ */ PRh("span", { className: "block text-[44px] font-bold leading-none" }, "+"), /* @__PURE__ */ PRh("span", { className: "mt-2 block text-[17px] font-bold" }, "New track"))), ql && !c.length && empty("None of your tracks match that search."));
+  }
+  if (selected) {
+    let creator = selected.community ? String(selected.name || "by someone").replace(/^by /, "") : selected.custom ? "You" : "PolyRush team";
+    let created = selected.createdAt ? new Date(selected.createdAt).toLocaleDateString(void 0, { year: "numeric", month: "long", day: "numeric" }) : "Built into PolyRush";
+    return /* @__PURE__ */ PRh("div", { className: "absolute inset-0 flex flex-col bg-[#0b1238]/90 backdrop-blur-md" }, /* @__PURE__ */ PRh("div", { className: "flex items-center gap-2 bg-[#0f1847]/95 p-2" }, /* @__PURE__ */ PRh($e, { onClick: () => setSelected(null), className: "px-5 py-2 text-[17px] font-bold italic" }, "← Tracks")), /* @__PURE__ */ PRh("div", { className: "flex min-h-0 flex-1 items-center justify-center overflow-y-auto px-5 py-8" }, /* @__PURE__ */ PRh("section", { className: "w-full max-w-[820px]" }, /* @__PURE__ */ PRh("div", { className: "grid gap-8 md:grid-cols-[280px_1fr] md:items-center" }, /* @__PURE__ */ PRh("div", { className: "bg-[#101a52] p-4" }, /* @__PURE__ */ PRh(Pm, { def: selected, size: "100%" }), /* @__PURE__ */ PRh("div", { className: "mt-3 text-center text-[14px] italic text-[#c7d1ff]" }, Hn[selected.season]?.icon, " ", Hn[selected.season]?.label)), /* @__PURE__ */ PRh("div", null, /* @__PURE__ */ PRh("div", { className: "text-[15px] font-semibold uppercase tracking-[0.14em] text-[#ffc928]" }, selected.community ? "Community track" : selected.custom ? "Your track" : "Official track"), /* @__PURE__ */ PRh("h1", { className: "mt-2 text-[clamp(38px,7vw,72px)] font-bold italic leading-none" }, selected.title), /* @__PURE__ */ PRh("p", { className: "mt-4 text-[18px] text-[#dfe4ff]" }, "Created by ", /* @__PURE__ */ PRh("b", null, creator)), /* @__PURE__ */ PRh("p", { className: "mt-1 text-[15px] italic text-[#c7d1ff]" }, "Created ", created, " · ", selected.pts?.length || 0, " route points · ", selected.cpCount || 3, " checkpoints"), /* @__PURE__ */ PRh($e, { onClick: () => onRace(selected), className: "mt-8 w-full py-4 text-[24px] font-bold italic !bg-[#2443c9] hover:!bg-[#2f55ef]" }, "Play track ▶"))), /* @__PURE__ */ PRh("p", { className: "mt-8 text-center text-[14px] italic text-[#9faadb]" }, "Review the route, then launch when you're ready."))));
   }
   return /* @__PURE__ */ PRh("div", { className: "absolute inset-0 flex flex-col bg-[#0b1238]/70 backdrop-blur-md" }, /* @__PURE__ */ PRh("div", { className: "flex items-stretch gap-2 bg-[#0f1847]/90 p-2" }, /* @__PURE__ */ PRh($e, { onClick: onBack, className: "px-5 py-2 text-[17px] font-bold italic" }, "← Back"), /* @__PURE__ */ PRh("label", { className: "pr-search" }, /* @__PURE__ */ PRh("input", { value: q, onChange: (ev) => setQ(ev.target.value), placeholder: "Search by track or author…", "aria-label": "Search tracks" }), /* @__PURE__ */ PRh("span", { className: "pr-search-ico" }, /* @__PURE__ */ PRh(PRIcon, { k: "search", size: 20 }))), /* @__PURE__ */ PRh($e, { onClick: () => {
     setImp((v) => !v), setIerr(null);
